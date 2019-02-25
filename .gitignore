@@ -1,2 +1,16 @@
-*.mp4
+# Mac os 
 *.DS_Store
+
+# Python 
+*__pycache__*
+
+# PyCharm 
+*.idea
+
+# Video
+*.mp4
+videos/*
+
+
+
+
