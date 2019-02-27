@@ -9,6 +9,7 @@
 
 # Video
 *.mp4
+*.webm
 videos/*
 
 
