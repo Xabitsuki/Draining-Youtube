@@ -17,6 +17,7 @@ if __name__ == '__main__':
 
     dir_video = 'videos/'
     dir_id = 'LXb3EKWsInQ/'
+    dir_frames = 'frames/'
     id_ = 'LXb3EKWsInQ_3840x2160' #TODO change hierarchy to not look for video file
     ext = '.webm'
     path_video = '{}{}{}{}'.format(dir_video, dir_id, id_, ext)
@@ -41,7 +42,10 @@ while ret:
 
     # Take only some images for each second
     if count % (fps/imgs_per_sec) == 0:
-        cv2.imwrite("{}{}/frames/frame{}.jpg".format(dir_video,dir_id,count), #TODO create dir for frames
+        cv2.imwrite("{}{}{}/frame{}.jpg".format(dir_video,
+                                                dir_id,
+                                                dir_frames,
+                                                count),
                     frame)
 
         print(count)
