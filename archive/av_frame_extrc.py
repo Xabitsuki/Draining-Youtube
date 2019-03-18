@@ -64,6 +64,13 @@ if __name__ == '__main__':
     start = 10
     stop = 40
 
+
+    def image_list(yt_id, image_directory='frames', out_directory='out_openMVG'):
+        # Get the width of the frames by searching into dictionary of information
+
+        cmd = "openMVG_main_SfMInit_ImageListing -i {} -o {} -f {}".format(image)
+
+
     timer = Timer()
 
 
