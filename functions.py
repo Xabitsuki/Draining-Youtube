@@ -131,5 +131,7 @@ def image_features(vid_id, sfm_file='sfm_data.json', out_directory='out_openMVG'
     """Calls openMVG to do compute features"""
 
     path_sfm = os.path.join(path_to_vid_dir(vid_id), 'out_openMVG', sfm_file)
+    print(path_sfm)
     cmd = 'openMVG_main_ComputeFeatures - i {} -o {}'.format(path_sfm, out_directory)
     os.system(cmd)
+
