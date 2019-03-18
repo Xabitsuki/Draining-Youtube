@@ -33,18 +33,6 @@ class Timer:
         if print_flag: print('\nExecution time : {}\n'.format(pretty_time))
 
 
-def yt_dl(url, opts={}):
-    """Call youtube-dl to download a video providing the url"""
-
-    if not opts:
-        # Provide an output template to store all the videos in a single directory,
-        # name them by id and extension and write information in json file
-        opts = {'outtmpl': 'videos/%(id)s/%(id)s_%(resolution)s.%(ext)s',
-                'writeinfojson': 'videos/%(id)s/'}
-
-    with youtube_dl.YoutubeDL(opts) as ydl:
-        ydl.download([url])
-
 def path_to_vid_dir(vid_id):
     """2returns full path to video dir assuming call from main folder"""
 
@@ -63,6 +51,21 @@ def path_to_vid_file(vid_id, vid_format):
     return os.path.join(path_to_vid_dir(vid_id), vid_file)
 
 
+# Youtube-dl
+
+
+def yt_dl(url, opts={}):
+    """Call youtube-dl to download a video providing the url"""
+
+    if not opts:
+        # Provide an output template to store all the videos in a single directory,
+        # name them by id and extension and write information in json file
+        opts = {'outtmpl': 'videos/%(id)s/%(id)s_%(resolution)s.%(ext)s',
+                'writeinfojson': 'videos/%(id)s/'}
+
+    with youtube_dl.YoutubeDL(opts) as ydl:
+        ydl.download([url])
+
 def get_dic_info(vid_id):
     """Load the info dictionnary created by youtube-dl when the video was downloaded."""
 
@@ -75,6 +78,8 @@ def get_dic_info(vid_id):
 
     return dic_info
 
+
+# Avconv Wrapping
 
 def vid_xtrct(vid_id, vid_format, start=0, stop=30):
     """creates a copy of the video that begins at start (in seconds) parameter and ends at ends at stop (in seconds)
@@ -114,7 +119,10 @@ def frame_xtrct(vid_id, vid_format, imgs_per_sec=2):
     os.system(cmd_str)
 
 
-def image_list(vid_id, image_directory='frames', out_directory='out_openMVG'):
+# OpenMVG wrapping
+
+
+def openmvg_list(vid_id, image_directory='frames', out_directory='out_openMVG'):
     """Calls openMVG for to perform the image listing"""
 
     # Get the width of the frames by searching into dictionary of information
@@ -131,23 +139,38 @@ def image_list(vid_id, image_directory='frames', out_directory='out_openMVG'):
     os.system(command=cmd)
 
 
-def image_features(vid_id, sfm_file='sfm_data.json', out_directory='out_features'):
-    """Calls openMVG to do compute features"""
+def openmvg_features(vid_id, sfm_file='sfm_data.json', out_dir='out_features'):
+    """Calls openMVG to do compute features and store output in out_openMVG/out_features (default)"""
 
     path_in = os.path.join(path_to_vid_dir(vid_id), 'out_openMVG', sfm_file)
-    path_out = os.path.join(path_to_vid_dir(vid_id), 'out_openMVG', out_directory)
+    path_out = os.path.join(path_to_vid_dir(vid_id), 'out_openMVG', out_dir)
     make_dir(path_out)
 
     cmd = 'openMVG_main_ComputeFeatures -i {} -o {}'.format(path_in, path_out)
     os.system(cmd)
 
-def image_matches(vid_id, sfm_file='sfm_data.json', out_directory='out_features'):
-    """Calls openMVG to do compute features"""
-    print('IN\n')
+def openmvg_matches(vid_id, sfm_file='sfm_data.json', out_dir='out_features'):
+    """Calls openMVG to do compute matches and store output in out_openMVG/out_features (default)"""
+
     path_in = os.path.join(path_to_vid_dir(vid_id), 'out_openMVG', sfm_file)
-    path_out = os.path.join(path_to_vid_dir(vid_id), 'out_openMVG', out_directory)
-    make_dir(path_out)
+    path_out = os.path.join(path_to_vid_dir(vid_id), 'out_openMVG', out_dir)
 
     cmd = 'openMVG_main_ComputeMatches -i {} -o {}'.format(path_in, path_out)
+
+    os.system(cmd)
+
+
+def openmvg_incremental(vid_id, sfm_file='sfm_data.json', matches_dir = 'out_features', out_dir='out_incremental'):
+    """Calles openMVG for the incremental and stores output in out_openMVG/out_incremental (default)"""
+
+    path_openmvg = os.path.join(path_to_vid_dir(vid_id=vid_id), 'out_openMVG')
+
+    path_in = os.path.join(path_openmvg, sfm_file)
+    path_matches = os.path.join(path_openmvg, matches_dir)
+    path_out = os.path.join(path_openmvg, out_dir)
+
+    make_dir(path_out)
+
+    cmd = "openMVG_main_IncrementalSfM -i {} -m {} -o {} ".format(path_in, path_matches, path_out)
 
     os.system(cmd)
