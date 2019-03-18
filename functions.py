@@ -114,7 +114,7 @@ def image_list(vid_id, image_directory='frames', out_directory='out_openMVG'):
     """calls openmvg for to perform the image listing"""
 
     # Get the width of the frames by searching into dictionary of information
-    width = get_dic_info(vid_id=vid_id).width
+    width = get_dic_info(vid_id=vid_id)['width']
 
     path_vid_dir = path_to_vid_dir(vid_id=vid_id)
     path_image_directory = os.path.join(path_vid_dir, image_directory)
