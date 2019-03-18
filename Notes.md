@@ -13,3 +13,14 @@ video of youtube at the adress https://youtube.com/watch?v=RgKAFK5djSk
 ### Results
 
 extracting frames from a 30 sec 4k video takes ~ 
+
+
+### Details 
+
+#### OpenMVG 
+
+- focal : as the details of the sensors and objectives
+
+### TODO
+
+- faire des moves dans le ficheir frame au moment de la 3D  
