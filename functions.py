@@ -5,6 +5,19 @@ import time
 import json
 
 
+def remove_ds_store(path):
+
+    """Remove .DS_Store file"""
+    path_ds_store = '{}/.DS_Store'.format(path)
+
+    if os.path.isfile(path_ds_store):
+        os.remove(path_ds_store)
+
+
+def make_dir(dir_name):
+    if not os.path.isdir(dir_name):
+        os.mkdir(dir_name)
+
 class Timer:
 
     def __init__(self):
@@ -101,15 +114,6 @@ def frame_xtrct(vid_id, vid_format, imgs_per_sec=2):
     os.system(cmd_str)
 
 
-def remove_ds_store(path):
-
-    """Remove .DS_Store file"""
-    path_ds_store = '{}/.DS_Store'.format(path)
-
-    if os.path.isfile(path_ds_store):
-        os.remove(path_ds_store)
-
-
 def image_list(vid_id, image_directory='frames', out_directory='out_openMVG'):
     """Calls openMVG for to perform the image listing"""
 
@@ -127,11 +131,12 @@ def image_list(vid_id, image_directory='frames', out_directory='out_openMVG'):
     os.system(command=cmd)
 
 
-def image_features(vid_id, sfm_file='sfm_data.json', out_directory='out_openMVG'):
+def image_features(vid_id, sfm_file='sfm_data.json', out_directory='out_openMVG/'):
     """Calls openMVG to do compute features"""
 
-    path_sfm = os.path.join(path_to_vid_dir(vid_id), 'out_openMVG', sfm_file)
-    print(path_sfm)
-    cmd = 'openMVG_main_ComputeFeatures - i {} -o {}'.format(path_sfm, out_directory)
+    path_in = os.path.join(path_to_vid_dir(vid_id), 'out_openMVG', sfm_file)
+    path_out = os.path.join(path_to_vid_dir(vid_id), out_directory)
+
+    cmd = 'openMVG_main_ComputeFeatures -i {} -o {}'.format(path_in, path_out)
     os.system(cmd)
 
