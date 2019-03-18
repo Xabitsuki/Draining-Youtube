@@ -131,12 +131,23 @@ def image_list(vid_id, image_directory='frames', out_directory='out_openMVG'):
     os.system(command=cmd)
 
 
-def image_features(vid_id, sfm_file='sfm_data.json', out_directory='out_openMVG/'):
+def image_features(vid_id, sfm_file='sfm_data.json', out_directory='out_features'):
     """Calls openMVG to do compute features"""
 
     path_in = os.path.join(path_to_vid_dir(vid_id), 'out_openMVG', sfm_file)
-    path_out = os.path.join(path_to_vid_dir(vid_id), out_directory)
+    path_out = os.path.join(path_to_vid_dir(vid_id), 'out_openMVG', out_directory)
+    make_dir(path_out)
 
     cmd = 'openMVG_main_ComputeFeatures -i {} -o {}'.format(path_in, path_out)
     os.system(cmd)
 
+def image_matches(vid_id, sfm_file='sfm_data.json', out_directory='out_matches'):
+    """Calls openMVG to do compute features"""
+
+    path_in = os.path.join(path_to_vid_dir(vid_id), 'out_openMVG', sfm_file)
+    path_out = os.path.join(path_to_vid_dir(vid_id), 'out_openMVG', out_directory)
+    make_dir(path_out)
+
+    cmd = 'openMVG_main_ComputeMatches -i {} -o {}'.format(path_in, path_out)
+
+    os.system(cmd)
