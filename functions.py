@@ -207,17 +207,16 @@ def get_frames_array(path_prev_iter):
     return np.array(list_frames)
 
 
-def move_frame(old_path, new_path):
-    """ Moves one frame provided the actual path and the new one."""
+def move_frames(pair_paths):
 
-
-def move_frames():
-    pass
+    for pair in pair_paths:
+        os.rename(pair[0], pair[1])
 
 
 def sfm_iteration(iter_number, dir_frames='frames'):
-    """Performes one iteration of the procedure"""
-    pass
+    """Performs one iteration of the procedure"""
+
+
 
 
 
