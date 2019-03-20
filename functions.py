@@ -156,7 +156,6 @@ def openmvg_matches(vid_id, sfm_file='sfm_data.json', out_dir='out_features'):
     path_out = os.path.join(path_to_vid_dir(vid_id), 'out_openMVG', out_dir)
 
     cmd = 'openMVG_main_ComputeMatches -i {} -o {}'.format(path_in, path_out)
-
     os.system(cmd)
 
 
@@ -172,5 +171,14 @@ def openmvg_incremental(vid_id, sfm_file='sfm_data.json', matches_dir = 'out_fea
     make_dir(path_out)
 
     cmd = "openMVG_main_IncrementalSfM -i {} -m {} -o {} ".format(path_in, path_matches, path_out)
+    os.system(cmd)
 
+
+def openmvg_bin_to_json(vid_id, sf_data_bin='sfm_data.bin')
+    """Call openMVG to convert to convert the binary file to json"""
+
+    path_in = os.path.join(path_to_vid_dir(vid_id), 'out_openMVG', 'out_incremental', sf_data_bin)
+    path_out = os.path.join(path_to_vid_dir(vid_id), 'out_openMVG', 'out_incremental', 'sf_data.json')
+
+    cmd = "openMVG_main_ConvertSfM_DataFormat -i {} -o {}".format(path_in, path_out)
     os.system(cmd)
