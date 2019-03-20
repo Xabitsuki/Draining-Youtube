@@ -3,7 +3,7 @@ import youtube_dl
 import os
 import time
 import json
-
+import numpy as np
 
 def remove_ds_store(path):
 
@@ -184,20 +184,39 @@ def openmvg_bin_to_json(vid_id, sf_data_bin='sfm_data.bin'):
     os.system(cmd)
 
 
-def get_frames_list:
-    pass
+def get_frames_array(path_prev_iter):
+
+    path_incr_data = os.path.join(path_prev_iter, 'out_incremental', 'sfm_data_incremental.json')
+
+    # Load json data in a dic
+    with open(path_incr_data) as f:
+        dic_incr = json.load(f)
 
 
-def move_frame:
-    pass
+    list_frames = list()
+    # Loop over the elements at extrinsic node:
+    for i in range(len(dic_incr['extrinsics'])):
+
+        list_frames.append(dic_incr['views']
+                           [dic_incr['extrinsics'][i]['key']]
+                            ['value']
+                             ['ptr_wrapper']
+                              ['data']
+                               ['filename'])
+
+    return np.array(list_frames)
 
 
-def move_frames:
+def move_frame(old_path, new_path):
+    """ Moves one frame provided the actual path and the new one."""
+
+
+def move_frames():
     pass
 
 
 def sfm_iteration(iter_number, dir_frames='frames'):
-    """Perfomes one iteration of the procedure"""
+    """Performes one iteration of the procedure"""
     pass
 
 
