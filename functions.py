@@ -174,11 +174,32 @@ def openmvg_incremental(vid_id, sfm_file='sfm_data.json', matches_dir = 'out_fea
     os.system(cmd)
 
 
-def openmvg_bin_to_json(vid_id, sf_data_bin='sfm_data.bin')
+def openmvg_bin_to_json(vid_id, sf_data_bin='sfm_data.bin'):
     """Call openMVG to convert to convert the binary file to json"""
 
     path_in = os.path.join(path_to_vid_dir(vid_id), 'out_openMVG', 'out_incremental', sf_data_bin)
-    path_out = os.path.join(path_to_vid_dir(vid_id), 'out_openMVG', 'out_incremental', 'sf_data.json')
+    path_out = os.path.join(path_to_vid_dir(vid_id), 'out_openMVG', 'out_incremental', 'sfm_data_incremental.json')
 
     cmd = "openMVG_main_ConvertSfM_DataFormat -i {} -o {}".format(path_in, path_out)
     os.system(cmd)
+
+
+def get_frames_list:
+    pass
+
+
+def move_frame:
+    pass
+
+
+def move_frames:
+    pass
+
+
+def sfm_iteration(iter_number, dir_frames='frames'):
+    """Perfomes one iteration of the procedure"""
+    pass
+
+
+
+
