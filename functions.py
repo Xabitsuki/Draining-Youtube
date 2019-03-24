@@ -18,6 +18,13 @@ def make_dir(dir_name):
     if not os.path.isdir(dir_name):
         os.mkdir(dir_name)
 
+
+def move_frames(pair_paths):
+
+    for pair in pair_paths:
+        os.rename(pair[0], pair[1])
+
+
 class Timer:
 
     def __init__(self):
@@ -122,51 +129,37 @@ def frame_xtrct(vid_id, vid_format, imgs_per_sec=2):
 # OpenMVG wrapping
 
 
-def openmvg_list(vid_id, image_directory='frames', out_directory='out_openMVG'):
-    """Calls openMVG for to perform the image listing"""
+def openmvg_list(vid_id, img_dir, out_dir):
+    """Calls openMVG for to perform the image listing
+    Generates sfm_data.json file"""
 
     # Get the width of the frames by searching into dictionary of information
     width = get_dic_info(vid_id=vid_id)['width']
 
-    path_vid_dir = path_to_vid_dir(vid_id=vid_id)
-    path_image_directory = os.path.join(path_vid_dir, image_directory)
-    path_out_directory = os.path.join(path_vid_dir, out_directory)
-
-    cmd = "openMVG_main_SfMInit_ImageListing -i {} -o {} -f {}".format(path_image_directory,
-                                                                       path_out_directory,
-                                                                       width)
+    cmd = "openMVG_main_SfMInit_ImageListing -i {} -o {} -f {}".format(img_dir, out_dir, width)
 
     os.system(command=cmd)
 
 
-def openmvg_features(vid_id, sfm_file='sfm_data.json', out_dir='out_features'):
-    """Calls openMVG to do compute features and store output in out_openMVG/out_features (default)"""
+def openmvg_features(path_sfm, path_features):
+    """Calls openMVG to do compute features
+    Generates .desc and .feat in the dir given by path features for all the frames"""
 
-    path_in = os.path.join(path_to_vid_dir(vid_id), 'out_openMVG', sfm_file)
-    path_out = os.path.join(path_to_vid_dir(vid_id), 'out_openMVG', out_dir)
-    make_dir(path_out)
-
-    cmd = 'openMVG_main_ComputeFeatures -i {} -o {}'.format(path_in, path_out)
-    os.system(cmd)
-
-def openmvg_matches(vid_id, sfm_file='sfm_data.json', out_dir='out_features'):
-    """Calls openMVG to do compute matches and store output in out_openMVG/out_features (default)"""
-
-    path_in = os.path.join(path_to_vid_dir(vid_id), 'out_openMVG', sfm_file)
-    path_out = os.path.join(path_to_vid_dir(vid_id), 'out_openMVG', out_dir)
-
-    cmd = 'openMVG_main_ComputeMatches -i {} -o {}'.format(path_in, path_out)
+    cmd = 'openMVG_main_ComputeFeatures -i {} -o {}'.format(path_sfm, path_features)
     os.system(cmd)
 
 
-def openmvg_incremental(vid_id, sfm_file='sfm_data.json', matches_dir = 'out_features', out_dir='out_incremental'):
-    """Calles openMVG for the incremental and stores output in out_openMVG/out_incremental (default)"""
+def openmvg_matches(path_sfm, path_matches):
+    """Calls openMVG to do compute matches
+    Generates various files: .bin , putative_matches ... """
 
-    path_openmvg = os.path.join(path_to_vid_dir(vid_id=vid_id), 'out_openMVG')
+    cmd = 'openMVG_main_ComputeMatches -i {} -o {}'.format(path_sfm, path_matches)
+    os.system(cmd)
 
-    path_in = os.path.join(path_openmvg, sfm_file)
-    path_matches = os.path.join(path_openmvg, matches_dir)
-    path_out = os.path.join(path_openmvg, out_dir)
+
+def openmvg_incremental(path_sfm, path_matches, path_incr):
+    """Calles openMVG for the incremental
+    Generates 3D models: .ply files"""
 
     make_dir(path_out)
 
@@ -207,14 +200,47 @@ def get_frames_array(path_prev_iter):
     return np.array(list_frames)
 
 
-def move_frames(pair_paths):
 
-    for pair in pair_paths:
-        os.rename(pair[0], pair[1])
+#
 
 
-def sfm_iteration(iter_number, dir_frames='frames'):
-    """Performs one iteration of the procedure"""
+def sfm_loop(vid_id, iter_number,
+             path_frames,
+             path_out_openMVG):
+
+    # Create iter dir
+    path_out_dir = os.path.join(path_out_openMVG, 'iter_{}'.format(iter_number)) #TODO change the way width is retrieved
+    make_dir(path_out_dir)
+
+    # Listing
+    openmvg_list(vid_id=vid_id, img_dir=path_frames, out_dir=path_out_dir)
+
+    # Computing features
+    path_sfm = os.path.join(path_out_dir, 'sfm_data.json')
+    path_features = os.path.join(path_out_dir, 'out_features')
+    make_dir(path_features)
+
+    openmvg_features(path_sfm=path_sfm, path_features=path_features)
+
+    # Matching
+    openmvg_matches(path_sfm=path_sfm, path_matches=path_features)
+
+    # Incremental
+    path_incr = os.path.join(path_out_dir, 'out_incremental')
+    make_dir(path_incr)
+
+    openmvg_incremental(path_sfm=path_sfm, path_matches=path_features, path_incr=path_incr)
+
+    # Moving frames
+
+
+
+def sfm_iteration(iter_number, vid_id):
+    """Performs one iteration of the procedure after the first run (iter_0) has been performed"""
+    path_dir = os.path.join(path_to_vid_dir(vid_id),'open_')
+    make_dir('')
+
+
 
 
 
