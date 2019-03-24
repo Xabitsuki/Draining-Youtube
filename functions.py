@@ -36,22 +36,22 @@ def make_dir(dir_name):
         os.mkdir(dir_name)
 
 
-def path_to_vid_dir(vid_id):
+def pth_vid_dir(vid_id):
     """2returns full path to video dir assuming call from main folder"""
 
     return os.path.join(os.getcwd(), 'videos', vid_id)
 
 
-def path_to_vid_file(vid_id, vid_format):
+def pth_vid_file(vid_id, vid_format):
     """returns full path to video file assuming call from main folder"""
 
     # search for file in path
-    path = path_to_vid_dir(vid_id=vid_id)
+    path = pth_vid_dir(vid_id=vid_id)
 
     # Look for file matching the format
     vid_file = [el for el in os.listdir(path) if el.endswith(vid_format)][0]  # TODO: should throw error if no file
 
-    return os.path.join(path_to_vid_dir(vid_id), vid_file)
+    return os.path.join(pth_vid_dir(vid_id), vid_file)
 
 
 # Youtube-dl
@@ -73,7 +73,7 @@ def yt_dl(url, opts={}):
 def get_dic_info(vid_id):
     """Load the info dictionnary created by youtube-dl when the video was downloaded."""
 
-    path_dir = path_to_vid_dir(vid_id=vid_id)
+    path_dir = pth_vid_dir(vid_id=vid_id)
     list_ = [el for el in os.listdir(path_dir) if el.endswith('.info.json')]
     path_info = os.path.join(path_dir, list_[0])
 
@@ -92,11 +92,11 @@ def vid_xtrct(vid_id, vid_format, start=0, stop=30):
     start = time.strftime("%H:%M:%S", time.gmtime(start))
     stop = time.strftime("%H:%M:%S", time.gmtime(stop))
 
-    split = path_to_vid_file(vid_id=vid_id, vid_format=vid_format).split(sep='.', maxsplit=1)
+    split = pth_vid_file(vid_id=vid_id, vid_format=vid_format).split(sep='.', maxsplit=1)
 
     path_to_trim_file = '{}-{}-{}.{}'.format(split[0], start, stop, split[1])
 
-    cmd_str = 'avconv -i {} -s {} -t {} -codec copy {}'.format(path_to_vid_file(vid_id=vid_id, vid_format=vid_format),
+    cmd_str = 'avconv -i {} -s {} -t {} -codec copy {}'.format(pth_vid_file(vid_id=vid_id, vid_format=vid_format),
                                                                start,
                                                                stop,
                                                                path_to_trim_file)
@@ -107,7 +107,7 @@ def frame_xtrct(vid_id, vid_format, imgs_per_sec=2):
 
     """ Creates a directory that contains the frames the extracted frames and extracts the frames calling avconv"""
 
-    path_vid_dir = path_to_vid_dir(vid_id)
+    path_vid_dir = pth_vid_dir(vid_id)
     path_frames_dir = os.path.join(path_vid_dir, 'frames')
 
     # Create "frame" directory:
@@ -115,7 +115,7 @@ def frame_xtrct(vid_id, vid_format, imgs_per_sec=2):
         os.mkdir(path_frames_dir)
 
     # Extract frames using specified rate and format
-    path_file = path_to_vid_file(vid_id=vid_id, vid_format=vid_format)
+    path_file = pth_vid_file(vid_id=vid_id, vid_format=vid_format)
 
     cmd_str = 'avconv -i {} -r {} -f image2 {}/frame%04d.png'.format(path_file,
                                                                      imgs_per_sec,
@@ -208,10 +208,11 @@ def move_frames(pair_paths):
 #
 
 
-def sfm_loop(vid_id, iter_number, path_frames, path_out_openMVG):
+def sfm_it(vid_id, iter_number, path_frames, path_openmvg):
+    """Performs one iteration of the procedure"""
 
     # Create iter dir
-    path_out_dir = os.path.join(path_out_openMVG, 'iter_{}'.format(iter_number)) #TODO change the way width is retrieved
+    path_out_dir = os.path.join(path_openmvg, 'iter_{}'.format(iter_number)) #TODO change the way width is retrieved
     make_dir(path_out_dir)
 
     # Listing
@@ -250,7 +251,22 @@ def sfm_loop(vid_id, iter_number, path_frames, path_out_openMVG):
     move_frames(list_tuple_path)
 
 
-def sfm_iteration(iter_number, vid_id):
-    """Performs one iteration of the procedure after the first run (iter_0) has been performed"""
-    path_dir = os.path.join(path_to_vid_dir(vid_id), 'open_')
-    make_dir('')
+def sfm_loop(vid_id):
+    """ Performs the sfm loop"""
+    path_vid_dir = pth_vid_dir(vid_id)
+    path_frames = os.path.join(path_vid_dir,'frames')
+    remove_ds_store(path_frames)
+    path_openmvg = os.path.join(path_vid_dir, 'out_openMVG')
+    make_dir(path_openmvg)
+
+    remove_ds_store()
+    nbr_frms = len(os.listdit(path_frames))
+    nbr_frms_temp nbr_frms
+    iter_nbr = 0
+
+    while nbr_frms_temp/nbr_frms > 0.1:  #Todo change this condition
+        sfm_it(vid_id=vid_id,
+               iter_number=iter_nbr,
+               path_frames=path_frames,
+               path_openmvg=path_openmvg)
+        iter_nbr += 1
