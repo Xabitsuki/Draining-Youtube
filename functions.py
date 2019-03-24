@@ -161,9 +161,9 @@ def openmvg_incremental(path_sfm, path_matches, path_incr):
     """Calles openMVG for the incremental
     Generates 3D models: .ply files"""
 
-    make_dir(path_out)
-
-    cmd = "openMVG_main_IncrementalSfM -i {} -m {} -o {} ".format(path_in, path_matches, path_out)
+    cmd = "openMVG_main_IncrementalSfM -i {} -m {} -o {} ".format(path_sfm,
+                                                                  path_matches,
+                                                                  path_incr)
     os.system(cmd)
 
 
