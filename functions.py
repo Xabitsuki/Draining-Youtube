@@ -113,21 +113,22 @@ def vid_xtrct(vid_id, vid_file, new_vid_file, start=0, stop=30):
     os.system(cmd_str)
 
 
-def frame_xtrct(vid_id, vid_format, imgs_per_sec=2):
+def frame_xtrct(vid_id, vid_file, rate=2):
 
-    """ Creates a directory that contains the frames the extracted frames and extracts the frames calling avconv"""
+    """ Creates a directory that contains the frames the extracted
+    frames and extracts the frames calling avconv"""
 
     # Create "frame" directory:
     path_vid_dir = pth_vid_dir(vid_id)
-    path_frames_dir = os.path.join(path_vid_dir, 'frames')
-    make_dir(path_frames_dir)
+    path_frames = os.path.join(path_vid_dir, 'frames')
+    make_dir(path_frames)
 
     # Extract frames using specified rate and format
-    path_file = pth_vid_file(vid_id=vid_id, vid_format=vid_format)
+    path_vid = os.path.join(path_vid_dir, vid_file)
 
-    cmd_str = 'avconv -i {} -r {} -f image2 {}/frame%04d.png'.format(path_file,
-                                                                     imgs_per_sec,
-                                                                     path_frames_dir)
+    cmd_str = 'avconv -i {} -r {} -f image2 {}/frame%04d.png'.format(path_vid,
+                                                                     rate,
+                                                                     path_frames)
     os.system(cmd_str)
 
 
