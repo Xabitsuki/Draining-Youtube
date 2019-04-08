@@ -21,6 +21,16 @@ extracting frames from a 30 sec 4k video takes ~
 
 - focal : as the details of the sensors and objectives
 
+### Terminal actions :
+
+#### Youtube dl 
+
+`youtube-dl {url}`
+
+#### Avconv
+
+`avconv -i {file} -ss {start time in s} -t {stop time in s} -codec copy {new file path}`
+
 ### TODO
 
 - faire des moves dans le ficheir frame au moment de la 3D
@@ -28,4 +38,5 @@ extracting frames from a 30 sec 4k video takes ~
 ### Possible improvements : 
 
 - parallelize some actions : 
-    - such as rien the moving of the frames  
+    - such as rien the moving of the frames
+    
