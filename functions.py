@@ -386,31 +386,3 @@ def move_triangles(triangles, path_frames, path_vid, path_feats):
             except FileNotFoundError:
                 pass
         s += 1
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
