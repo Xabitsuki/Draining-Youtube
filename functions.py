@@ -135,14 +135,14 @@ def frame_xtrct(vid_id, vid_file, rate=2):
 # OpenMVG wrapping
 
 
-def openmvg_list(vid_id, img_dir, out_dir):
+def openmvg_list(vid_id, frm_dir, out_dir):
     """Calls openMVG for to perform the image listing
     Generates sfm_data.json file"""
 
     # Get the width of the frames by searching into dictionary of information
     width = get_dic_info(vid_id=vid_id)['width']
 
-    cmd = "openMVG_main_SfMInit_ImageListing -i {} -o {} -f {}".format(img_dir, out_dir, width)
+    cmd = "openMVG_main_SfMInit_ImageListing -i {} -o {} -f {}".format(frm_dir, out_dir, width)
 
     os.system(command=cmd)
 
@@ -285,6 +285,30 @@ def sfm_loop(vid_id):
                path_frames=path_frames,
                path_openmvg=path_openmvg)
         iter_nbr += 1
+
+
+# Iter 0
+
+def iter0(vid_id):
+    """Function used to make the first iteration of processing loop"""
+
+    # Make iter0 dir
+    path_dir = pth_vid_dir(vid_idr)
+    path_iter0 = os.path.join(path_dir,'iter0')
+    make_dir(path_iter0)
+
+    path_frm = os.path.join(path_dir, 'frames')
+
+    openmvg_list(vid_id=vid_id,frm_dir=frm_dir, out_dir=path_iter0)
+
+    path_feat = os.path.join(path_iter0, 'features')
+    make_dir(path_feat)
+
+    sfm = 'sfm_data.json'
+    path_sfm = os.path.join(path_iter0, sfm)
+
+    openmvg_features(path_sfm=path_sfm, path_features=path_feat)
+    openmvg_matches(path_sfm=path_sfm, path_matches=path_feat)
 
 
 # Extract Triangles
