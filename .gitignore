@@ -12,6 +12,7 @@
 *.webm
 videos/*
 
-
+# Notebook
+.ipynb_checkpoints/*
 
 
