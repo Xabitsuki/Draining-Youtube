@@ -179,6 +179,18 @@ def openmvg_incremental(path_sfm, path_matches, path_incr):
     os.system(cmd)
 
 
+def openmvg_colors(path_incr):
+    """Functions to call openMVG_main_ComputeSfM_DataColor to add
+    the colors on the points of the 3D model"""
+
+    path_sfm = os.path.join(path_incr, 'sfm_data.bin')
+    path_ply = os.path.join(path_incr, 'sfm_data_color.ply')
+
+    cmd = 'openMVG_main_ComputeSfM_DataColor -i {} -o {}'.format(path_sfm, path_ply)
+
+    os.system(cmd)
+
+
 def openmvg_bin_to_json(path_data_bin, path_data_json):
     """Call openMVG to convert to convert the binary file to json"""
 
