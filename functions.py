@@ -107,12 +107,10 @@ def frame_xtrct(vid_id, vid_format, imgs_per_sec=2):
 
     """ Creates a directory that contains the frames the extracted frames and extracts the frames calling avconv"""
 
+    # Create "frame" directory:
     path_vid_dir = pth_vid_dir(vid_id)
     path_frames_dir = os.path.join(path_vid_dir, 'frames')
-
-    # Create "frame" directory:
-    if not os.path.isdir(path_frames_dir):
-        os.mkdir(path_frames_dir)
+    make_dir(path_frames_dir)
 
     # Extract frames using specified rate and format
     path_file = pth_vid_file(vid_id=vid_id, vid_format=vid_format)
@@ -212,10 +210,10 @@ def sfm_it(vid_id, iter_number, path_frames, path_openmvg):
     """Performs one iteration of the procedure"""
 
     # Create iter dir
-    path_out_dir = os.path.join(path_openmvg, 'iter_{}'.format(iter_number)) #TODO change the way width is retrieved
+    path_out_dir = os.path.join(path_openmvg, 'iter_{}'.format(iter_number))
     make_dir(path_out_dir)
 
-    # Listing
+    # Listing #TODO change the way width is retrieved
     openmvg_list(vid_id=vid_id, img_dir=path_frames, out_dir=path_out_dir)
 
     # Computing features
@@ -259,14 +257,51 @@ def sfm_loop(vid_id):
     path_openmvg = os.path.join(path_vid_dir, 'out_openMVG')
     make_dir(path_openmvg)
 
-    remove_ds_store()
-    nbr_frms = len(os.listdit(path_frames))
-    nbr_frms_temp nbr_frms
+    remove_ds_store(path_frames)
+    nbr_frms = len(os.listdir(path_frames))
+    nbr_frms_temp = nbr_frms
     iter_nbr = 0
 
     while nbr_frms_temp/nbr_frms > 0.1:  #Todo change this condition
+        print('Iteration {}'.format(iter_nbr))
+        nbr_frms = len(os.listdir(path_frames))
+        print('{:.2f}% of frames in main directory \n'.format(nbr_frms_temp/nbr_frms))
         sfm_it(vid_id=vid_id,
                iter_number=iter_nbr,
                path_frames=path_frames,
                path_openmvg=path_openmvg)
         iter_nbr += 1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
