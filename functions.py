@@ -98,21 +98,18 @@ def get_dic_info(vid_id):
 
 # Avconv Wrapping
 
-def vid_xtrct(vid_id, vid_format, start=0, stop=30):
-    """creates a copy of the video that begins at start (in seconds) parameter and ends at ends at stop (in seconds)
-    parameter"""
+def vid_xtrct(vid_id, vid_file, new_vid_file, start=0, stop=30):
+    """creates a copy of the video that begins at start (in seconds) parameter and
+     ends at ends at stop (in seconds) parameter"""
 
-    start = time.strftime("%H:%M:%S", time.gmtime(start))
-    stop = time.strftime("%H:%M:%S", time.gmtime(stop))
+    path_vid_dir = pth_vid_dir(vid_id=vid_id)
+    path_vid_file = os.path.join(path_vid_dir, vid_file)
+    path_new_vid = os.path.join(path_vid_dir, new_vid_file)
 
-    split = pth_vid_file(vid_id=vid_id, vid_format=vid_format).split(sep='.', maxsplit=1)
-
-    path_to_trim_file = '{}-{}-{}.{}'.format(split[0], start, stop, split[1])
-
-    cmd_str = 'avconv -i {} -s {} -t {} -codec copy {}'.format(pth_vid_file(vid_id=vid_id, vid_format=vid_format),
-                                                               start,
-                                                               stop,
-                                                               path_to_trim_file)
+    cmd_str = 'avconv -i {} -ss {} -t {} -codec copy {}'.format(path_vid_file,
+                                                                start,
+                                                                stop,
+                                                                path_new_vid)
     os.system(cmd_str)
 
 
