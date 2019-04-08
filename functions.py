@@ -44,11 +44,17 @@ def make_dir(dir_name):
 
 # Get paths
 
+def pth_prj(prj_name='Draining-Youtube'):
+
+    cur_dir = os.getcwd()
+    split = cur_dir.split(prj_name)
+    return os.path.join(split[0], prj_name)
+
 
 def pth_vid_dir(vid_id):
     """2returns full path to video dir assuming call from main folder"""
 
-    return os.path.join(os.getcwd(), 'videos', vid_id)
+    return os.path.join(pth_prj(), 'videos', vid_id)
 
 
 def pth_vid_file(vid_id, vid_format):
@@ -293,13 +299,13 @@ def iter0(vid_id):
     """Function used to make the first iteration of processing loop"""
 
     # Make iter0 dir
-    path_dir = pth_vid_dir(vid_idr)
-    path_iter0 = os.path.join(path_dir,'iter0')
+    path_dir = pth_vid_dir(vid_id)
+    path_iter0 = os.path.join(path_dir, 'iter0')
     make_dir(path_iter0)
 
-    path_frm = os.path.join(path_dir, 'frames')
+    frm_dir = os.path.join(path_dir, 'frames')
 
-    openmvg_list(vid_id=vid_id,frm_dir=frm_dir, out_dir=path_iter0)
+    openmvg_list(vid_id=vid_id, frm_dir=frm_dir, out_dir=path_iter0)
 
     path_feat = os.path.join(path_iter0, 'features')
     make_dir(path_feat)
