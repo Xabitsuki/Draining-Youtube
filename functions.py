@@ -365,7 +365,8 @@ def make_adj_mat(match_list, path_frames):
     the match_list passed as argument."""
 
     # retrieve size of matrix
-    
+    remove_ds_store(path_frames)
+    n = len(os.listdir(path_frames))
 
     # initialize matrix
     adj_mat = np.zeros((n, n))
