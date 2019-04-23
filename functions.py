@@ -337,14 +337,14 @@ def line_to_tuple(line):
             int(line.split(sep=' ', maxsplit=1)[1]))
 
 
-def extract_matches(path):
+def extract_matches(path_mtchs):
     """function to read the matches.f.txt file to extract the matches"""
 
     # Open and read matches file
-    f = open(path, mode='r')
+    f = open(path_mtchs, mode='r')
     string_file = f.read()
 
-    # Convert to list on lines
+    # Convert to list of lines
     lines = string_file.split(sep='\n')
 
     nbr_lines = len(lines)
@@ -360,10 +360,33 @@ def extract_matches(path):
     return match_list
 
 
-def split_triangles(adj_mat, n): # TODO ne pas avoir besoin de passer n
+def make_adj_mat(match_list, path_frames):
+    """Function to recreate an adjacency matrix out of
+    the match_list passed as argument."""
+
+    # retrieve size of matrix
+    
+
+    # initialize matrix
+    adj_mat = np.zeros((n, n))
+
+    idx = np.asarray(match_list)
+
+    # slice the matrix with correct idxs
+    adj_mat[idx[:, 0], idx[:, 1]] = 1
+
+    return adj_mat
+
+
+def mtchs_bin_to_mat(path_mtchs, n):
+
+    return make_adj_mat(extract_matches(path_mtchs), n)
+
+
+def split_triangles(adj_mat):
     """Provides the provides a list containing tuples that decribe
-    traingles of images that match : the triangle are composed of the points
-    (i_min, i_min+1), (i_min, i_max), (i_max-1, i_max) in the adjency matrix """
+    triangles of images that match : the triangle are composed of the points
+    (i_min, i_min+1), (i_min, i_max), (i_max-1, i_max) in the adjacency matrix """
 
     triangles = list()
     i_min = 0
@@ -375,8 +398,13 @@ def split_triangles(adj_mat, n): # TODO ne pas avoir besoin de passer n
         non_zer = np.nonzero(adj_mat[i])[0]
 
         if non_zer.size > 0:
-            if i_max < np.max(non_zer):
-                i_max = np.max(non_zer)
+            i =
+            i_max = non_zer[:-1]
+
+            while
+            if i_max < tmp_max:
+                if # TODO changer la condition pour le max
+                    i_max = np.max(non_zer)
         else:
             if i == i_max:
                 # Close triangle
