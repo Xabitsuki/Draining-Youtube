@@ -82,7 +82,7 @@ def yt_dl(url, opts={}):
     if not opts:
         # Provide an output template to store all the videos in a single directory,
         # name them by id and extension and write information in json file
-        opts = {'outtmpl': 'videos/%(id)s/%(id)s_%(resolution)s.%(ext)s',
+        opts = {'outtmpl': 'videos/%(id)s/data/%(id)s_%(resolution)s.%(ext)s',
                 'writeinfojson': 'videos/%(id)s/'}
 
     with youtube_dl.YoutubeDL(opts) as ydl:
