@@ -102,7 +102,7 @@ def get_dic_info(vid_id):
     return dic_info
 
 
-# Avconv Wrapping
+# ffmpeg Wrapping
 
 def vid_xtrct(vid_id, vid_file, new_vid_file, start=0, stop=30):
     """creates a copy of the video that begins at start (in seconds) parameter and
