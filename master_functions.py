@@ -6,9 +6,11 @@ def capture(url):
 
     # Create vid dir and download
     yt_dl(url=url)
+    v_id = url_to_id(url=url)
 
     # Extract frames
-    frame_xtrct(v_id=v_id)
+    frame_xtrct(v_id=v_id, use_sample=off)
+    return v_id
 
 def iter0(v_id):
     """Function used to make the first iteration of processing loop"""

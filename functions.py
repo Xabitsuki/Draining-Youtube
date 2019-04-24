@@ -57,14 +57,14 @@ def pth_vid_dir(v_id):
     return os.path.join(pth_prj(), 'videos', v_id)
 
 
-def pth_vid_file(v_id, vid_format):
+def pth_vid_file(v_id):
     """returns full path to video file assuming call from main folder"""
 
     # search for file in path
     path = pth_vid_dir(v_id=v_id)
 
     # Look for file matching the format
-    vid_file = [el for el in os.listdir(path) if el.endswith(vid_format)][0]  # TODO: should throw error if no file
+    vid_file = [el for el in os.listdir(path) if not el.endswith('.info.json')][0]
 
     return os.path.join(pth_vid_dir(v_id), vid_file)
 
@@ -83,7 +83,7 @@ def yt_dl(url, opts={}):
         # Provide an output template to store all the videos in a single directory,
         # name them by id and extension and write information in json file
         opts = {'outtmpl': 'videos/%(id)s/data/%(id)s_%(resolution)s.%(ext)s',
-                'writeinfojson': 'videos/%(id)s/'}
+                'writeinfojson': '0'}
 
     with youtube_dl.YoutubeDL(opts) as ydl:
         ydl.download([url])
@@ -92,8 +92,8 @@ def yt_dl(url, opts={}):
 def get_dic_info(v_id):
     """Load the info dictionnary created by youtube-dl when the video was downloaded."""
 
-    path_dir = pth_vid_dir(v_id=v_id)
-    list_ = [el for el in os.listdir(path_dir) if el.endswith('.info.json')]
+    path_data = os.path.join(pth_vid_dir(v_id=v_id), 'data')
+    list_ = [el for el in os.listdir(path_data) if el.endswith('.info.json')]
     path_info = os.path.join(path_dir, list_[0])
 
     with open(path_info) as f:
@@ -104,22 +104,8 @@ def get_dic_info(v_id):
 
 # ffmpeg Wrapping
 
-def vid_xtrct(v_id, vid_file, new_vid_file, start=0, stop=30):
-    """creates a copy of the video that begins at start (in seconds) parameter and
-     ends at ends at stop (in seconds) parameter"""
 
-    path_v_dir = pth_vid_dir(v_id=v_id)
-    path_vid_file = os.path.join(path_v_dir, vid_file)
-    path_new_vid = os.path.join(path_v_dir, new_vid_file)
-
-    cmd_str = 'ffmpeg -i {} -ss {} -t {} -codec copy {}'.format(path_vid_file,
-                                                                start,
-                                                                stop,
-                                                                path_new_vid)
-    os.system(cmd_str)
-
-
-def frame_xtrct(v_id, vid_file, rate=2):
+def frame_xtrct(v_id, rate=2):
 
     """ Creates a directory that contains the frames the extracted
     frames and extracts the frames calling avconv"""
@@ -138,6 +124,23 @@ def frame_xtrct(v_id, vid_file, rate=2):
 
     cmd = 'ffmpeg -i {} -r {} -f image2 {}/frame%04d.png'.format(path_vid, rate, path_frames)
     os.system(cmd)
+
+
+def vid_xtrct(v_id, vid_file, new_vid_file, start=0, stop=30):
+    """creates a copy of the video that begins at start (in seconds) parameter and
+     ends at ends at stop (in seconds) parameter"""
+
+    path_v_dir = pth_vid_dir(v_id=v_id)
+    path_data = path_vid_file(v_id=v_id)
+    path_new_vid = os.path.join(path_v_dir, new_vid_file)
+
+    cmd_str = 'ffmpeg -i {} -ss {} -t {} -codec copy {}'.format(path_vid_file,
+                                                                start,
+                                                                stop,
+                                                                path_new_vid)
+    os.system(cmd_str)
+
+
 
 
 # OpenMVG wrapping
