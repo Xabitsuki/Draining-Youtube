@@ -51,22 +51,22 @@ def pth_prj(prj_name='Draining-Youtube'):
     return os.path.join(split[0], prj_name)
 
 
-def pth_vid_dir(vid_id):
-    """2returns full path to video dir assuming call from main folder"""
+def pth_vid_dir(v_id):
+    """returns full path to video dir assuming call from main folder"""
 
-    return os.path.join(pth_prj(), 'videos', vid_id)
+    return os.path.join(pth_prj(), 'videos', v_id)
 
 
-def pth_vid_file(vid_id, vid_format):
+def pth_vid_file(v_id, vid_format):
     """returns full path to video file assuming call from main folder"""
 
     # search for file in path
-    path = pth_vid_dir(vid_id=vid_id)
+    path = pth_vid_dir(v_id=v_id)
 
     # Look for file matching the format
     vid_file = [el for el in os.listdir(path) if el.endswith(vid_format)][0]  # TODO: should throw error if no file
 
-    return os.path.join(pth_vid_dir(vid_id), vid_file)
+    return os.path.join(pth_vid_dir(v_id), vid_file)
 
 
 # Youtube-dl
@@ -89,10 +89,10 @@ def yt_dl(url, opts={}):
         ydl.download([url])
 
 
-def get_dic_info(vid_id):
+def get_dic_info(v_id):
     """Load the info dictionnary created by youtube-dl when the video was downloaded."""
 
-    path_dir = pth_vid_dir(vid_id=vid_id)
+    path_dir = pth_vid_dir(v_id=v_id)
     list_ = [el for el in os.listdir(path_dir) if el.endswith('.info.json')]
     path_info = os.path.join(path_dir, list_[0])
 
@@ -104,13 +104,13 @@ def get_dic_info(vid_id):
 
 # ffmpeg Wrapping
 
-def vid_xtrct(vid_id, vid_file, new_vid_file, start=0, stop=30):
+def vid_xtrct(v_id, vid_file, new_vid_file, start=0, stop=30):
     """creates a copy of the video that begins at start (in seconds) parameter and
      ends at ends at stop (in seconds) parameter"""
 
-    path_vid_dir = pth_vid_dir(vid_id=vid_id)
-    path_vid_file = os.path.join(path_vid_dir, vid_file)
-    path_new_vid = os.path.join(path_vid_dir, new_vid_file)
+    path_v_dir = pth_vid_dir(v_id=v_id)
+    path_vid_file = os.path.join(path_v_dir, vid_file)
+    path_new_vid = os.path.join(path_v_dir, new_vid_file)
 
     cmd_str = 'ffmpeg -i {} -ss {} -t {} -codec copy {}'.format(path_vid_file,
                                                                 start,
@@ -119,34 +119,36 @@ def vid_xtrct(vid_id, vid_file, new_vid_file, start=0, stop=30):
     os.system(cmd_str)
 
 
-def frame_xtrct(vid_id, vid_file, rate=2):
+def frame_xtrct(v_id, vid_file, rate=2):
 
     """ Creates a directory that contains the frames the extracted
     frames and extracts the frames calling avconv"""
 
     # Create "frame" directory:
-    path_vid_dir = pth_vid_dir(vid_id)
-    path_frames = os.path.join(path_vid_dir, 'frames')
+    path_v_dir = pth_vid_dir(v_id)
+
+    path_frames = os.path.join(path_v_dir, 'frames')
     make_dir(path_frames)
 
-    # Extract frames using specified rate and format
-    path_vid = os.path.join(path_vid_dir, vid_file)
+    path_data = os.path.join(path_v_dir, 'data')
+    path_data = os.path.join(path_data, os.listdir(path_data)[0])
 
-    cmd_str = 'ffmpeg -i {} -r {} -f image2 {}/frame%04d.png'.format(path_vid,
-                                                                     rate,
-                                                                     path_frames)
-    os.system(cmd_str)
+    # Extract frames using specified rate and format
+    path_vid = os.path.join(path_v_dir, vid_file)
+
+    cmd = 'ffmpeg -i {} -r {} -f image2 {}/frame%04d.png'.format(path_vid, rate, path_frames)
+    os.system(cmd)
 
 
 # OpenMVG wrapping
 
 
-def openmvg_list(vid_id, frm_dir, out_dir):
+def openmvg_list(v_id, frm_dir, out_dir):
     """Calls openMVG for to perform the image listing
     Generates sfm_data.json file"""
 
     # Get the width of the frames by searching into dictionary of information
-    width = get_dic_info(vid_id=vid_id)['width']
+    width = get_dic_info(v_id=v_id)['width']
 
     cmd = "openMVG_main_SfMInit_ImageListing -i {} -o {} -f {}".format(frm_dir, out_dir, width)
 
@@ -238,7 +240,7 @@ def move_frames(pair_paths):
 #
 
 
-def sfm_it(vid_id, iter_number, path_frames, path_openmvg):
+def sfm_it(v_id, iter_number, path_frames, path_openmvg):
     """Performs one iteration of the procedure"""
 
     # Create iter dir
@@ -246,7 +248,7 @@ def sfm_it(vid_id, iter_number, path_frames, path_openmvg):
     make_dir(path_out_dir)
 
     # Listing
-    openmvg_list(vid_id=vid_id, img_dir=path_frames, out_dir=path_out_dir)
+    openmvg_list(v_id=v_id, img_dir=path_frames, out_dir=path_out_dir)
 
     # Computing features
     path_sfm = os.path.join(path_out_dir, 'sfm_data.json')
@@ -281,12 +283,12 @@ def sfm_it(vid_id, iter_number, path_frames, path_openmvg):
     move_frames(list_tuple_path)
 
 
-def sfm_loop(vid_id):
+def sfm_loop(v_id):
     """ Performs the sfm loop"""
-    path_vid_dir = pth_vid_dir(vid_id)
-    path_frames = os.path.join(path_vid_dir,'frames')
+    path_v_dir = pth_vid_dir(v_id)
+    path_frames = os.path.join(path_v_dir,'frames')
     remove_ds_store(path_frames)
-    path_openmvg = os.path.join(path_vid_dir, 'out_openMVG')
+    path_openmvg = os.path.join(path_v_dir, 'out_openMVG')
     make_dir(path_openmvg)
 
     remove_ds_store(path_frames)
@@ -298,35 +300,13 @@ def sfm_loop(vid_id):
         print('Iteration {}'.format(iter_nbr))
         nbr_frms = len(os.listdir(path_frames))
         print('{:.2f}% of frames in main directory \n'.format(nbr_frms_temp/nbr_frms))
-        sfm_it(vid_id=vid_id,
+        sfm_it(v_id=v_id,
                iter_number=iter_nbr,
                path_frames=path_frames,
                path_openmvg=path_openmvg)
         iter_nbr += 1
 
 
-# Iter 0
-
-def iter0(vid_id):
-    """Function used to make the first iteration of processing loop"""
-
-    # Make iter0 dir
-    path_dir = pth_vid_dir(vid_id)
-    path_iter0 = os.path.join(path_dir, 'iter0')
-    make_dir(path_iter0)
-
-    frm_dir = os.path.join(path_dir, 'frames')
-
-    openmvg_list(vid_id=vid_id, frm_dir=frm_dir, out_dir=path_iter0)
-
-    path_feat = os.path.join(path_iter0, 'features')
-    make_dir(path_feat)
-
-    sfm = 'sfm_data.json'
-    path_sfm = os.path.join(path_iter0, sfm)
-
-    openmvg_features(path_sfm=path_sfm, path_features=path_feat)
-    openmvg_matches(path_sfm=path_sfm, path_matches=path_feat)
 
 
 # Extract Triangles
