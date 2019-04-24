@@ -112,7 +112,7 @@ def vid_xtrct(vid_id, vid_file, new_vid_file, start=0, stop=30):
     path_vid_file = os.path.join(path_vid_dir, vid_file)
     path_new_vid = os.path.join(path_vid_dir, new_vid_file)
 
-    cmd_str = 'avconv -i {} -ss {} -t {} -codec copy {}'.format(path_vid_file,
+    cmd_str = 'ffmpeg -i {} -ss {} -t {} -codec copy {}'.format(path_vid_file,
                                                                 start,
                                                                 stop,
                                                                 path_new_vid)
@@ -132,7 +132,7 @@ def frame_xtrct(vid_id, vid_file, rate=2):
     # Extract frames using specified rate and format
     path_vid = os.path.join(path_vid_dir, vid_file)
 
-    cmd_str = 'avconv -i {} -r {} -f image2 {}/frame%04d.png'.format(path_vid,
+    cmd_str = 'ffmpeg -i {} -r {} -f image2 {}/frame%04d.png'.format(path_vid,
                                                                      rate,
                                                                      path_frames)
     os.system(cmd_str)
@@ -245,7 +245,7 @@ def sfm_it(vid_id, iter_number, path_frames, path_openmvg):
     path_out_dir = os.path.join(path_openmvg, 'iter_{}'.format(iter_number))
     make_dir(path_out_dir)
 
-    # Listing #TODO change the way width is retrieved
+    # Listing
     openmvg_list(vid_id=vid_id, img_dir=path_frames, out_dir=path_out_dir)
 
     # Computing features
@@ -379,41 +379,49 @@ def make_adj_mat(match_list, path_frames):
     return adj_mat
 
 
-def mtchs_bin_to_mat(path_mtchs, n):
+def mtchs_bin_to_mat(path_mtchs, path_frames):
 
-    return make_adj_mat(extract_matches(path_mtchs), n)
+    return make_adj_mat(extract_matches(path_mtchs), path_frames)
 
 
-def split_triangles(adj_mat):
+def split_triangles(adj_mat, tol=30):
     """Provides the provides a list containing tuples that decribe
     triangles of images that match : the triangle are composed of the points
     (i_min, i_min+1), (i_min, i_max), (i_max-1, i_max) in the adjacency matrix """
 
+    n = adj_mat.shape[0]
     triangles = list()
     i_min = 0
     i_max = 0
 
     for i in range(0, n):
 
-        # Retrieve i_max for current considered line
+        # Retrieve non zero value for current line
         non_zer = np.nonzero(adj_mat[i])[0]
 
+        # check if at begining or triangle
         if non_zer.size > 0:
-            i =
-            i_max = non_zer[:-1]
 
-            while
-            if i_max < tmp_max:
-                if # TODO changer la condition pour le max
-                    i_max = np.max(non_zer)
+            # check if no far image is taken into account
+            if abs(non_zer[-1] - non_zer[0]) >= tol:
+
+                length = len(non_zer)
+                j = 0
+
+                while j != length and abs(non_zer[j+1] - non_zer[j]) < tol:
+                    j += 1
+
+            # no far image: take them all
+            else:
+                i_max = non_zer[-1]
+
+        # empty triangle or at end of triangle
         else:
             if i == i_max:
                 # Close triangle
                 if i_min < i_max:
                     triangles.append((i_min, i_max))
-                i_min = i_max + 1
-                i_max = i_min
-                # print('i = {}\ni_min = {}\ni_max = {}\n'.format(i,i_min,i_max))
+                i_min = i_max = i_max + 1
 
     return triangles
 
@@ -458,3 +466,4 @@ def move_triangles(triangles, path_frames, path_vid, path_feats):
             except FileNotFoundError:
                 pass
         s += 1
+
