@@ -50,8 +50,18 @@ def pth_prj(prj_name='Draining-Youtube'):
     split = cur_dir.split(prj_name)
     return os.path.join(split[0], prj_name)
 
+def pth_vids():
+    return os.path.join(pth_prj(), 'videos')
 
-def pth_vid_dir(v_id):
+
+def get_v_id(pth):
+    """Retrieve v_id from path that contains it"""
+
+    return pth.split(sep=pth_vids())[1].split(sep='/')[1]
+
+
+
+def pth_vid(v_id):
     """returns full path to video dir assuming call from main folder"""
 
     return os.path.join(pth_prj(), 'videos', v_id)
@@ -60,7 +70,7 @@ def pth_vid_dir(v_id):
 def pth_data(v_id):
     """returns full path to video file assuming call from main folder"""
 
-    path = pth_vid_dir(v_id=v_id)
+    path = pth_vid(v_id=v_id)
     path_data = os.path.join(path, 'data')
 
     remove_ds_store(path_data)
@@ -70,25 +80,29 @@ def pth_data(v_id):
     vid_file = [el for el in os.listdir(path_data) if not el.endswith('.info.json')][0]
     return os.path.join(path_data, vid_file)
 
+
 def pth_frms(v_id):
-    return os.path.join(pth_vid_dir(v_id), 'frames')
+    return os.path.join(pth_vid(v_id), 'frames')
+
 
 def pth_iter0_feats(v_id):
-    return os.path.join(pth_vid_dir(v_id),
+    return os.path.join(pth_vid(v_id),
                         'iter0',
                         'features')
+
 
 def pth_iter0_mtchs(v_id):
 
     return os.path.join(pth_iter0_feats(v_id),
                         'matches.f.txt')
 
+
 def pth_sfm(pth):
     """returns path to sfm file if found at location given by pth"""
 
-    sfm = [el for el in os.listdir(pth) if el.startswith('sfm_')][0] # Todo exceptions needed
+    sfm = [el for el in os.listdir(pth) if el.startswith('sfm_')][0]  # Todo exceptions needed
 
-    return os.path.join(pth,sfm)
+    return os.path.join(pth, sfm)
 
 
 # Youtube-dl
@@ -114,7 +128,7 @@ def yt_dl(url, opts={}):
 def get_dic_info(v_id):
     """Load the info dictionnary created by youtube-dl when the video was downloaded."""
 
-    path_data = os.path.join(pth_vid_dir(v_id=v_id), 'data')
+    path_data = os.path.join(pth_vid(v_id=v_id), 'data')
 
     list_ = [el for el in os.listdir(path_data) if el.endswith('.info.json')]
     path_info = os.path.join(path_data, list_[0])
@@ -134,7 +148,7 @@ def frame_xtrct(v_id, rate=2, sample=False, start=0, stop=60):
     frames and extracts the frames calling avconv"""
 
     # Create "frame" directory:
-    path_v_dir = pth_vid_dir(v_id)
+    path_v_dir = pth_vid(v_id)
 
     path_frames = os.path.join(path_v_dir, 'frames')
     make_dir(path_frames)
@@ -157,11 +171,11 @@ def frame_xtrct(v_id, rate=2, sample=False, start=0, stop=60):
     os.system(cmd)
 
 
-def vid_xtrct(v_id, vid_file, new_vid_file, start=0, stop=30):
+def vid_xtrct(v_id, new_vid_file, start=0, stop=30):
     """creates a copy of the video that begins at start (in seconds) parameter and
      ends at ends at stop (in seconds) parameter"""
 
-    path_v_dir = pth_vid_dir(v_id=v_id)
+    path_v_dir = pth_vid(v_id=v_id)
     path_data = pth_data(v_id=v_id)
     path_new_vid = os.path.join(path_v_dir, new_vid_file)
 
@@ -170,8 +184,6 @@ def vid_xtrct(v_id, vid_file, new_vid_file, start=0, stop=30):
                                                                 stop,
                                                                 path_new_vid)
     os.system(cmd_str)
-
-
 
 
 # OpenMVG wrapping
@@ -320,7 +332,7 @@ def sfm_it(v_id, iter_number, path_frames, path_openmvg):
 
 def sfm_loop(v_id):
     """ Performs the sfm loop"""
-    path_v_dir = pth_vid_dir(v_id)
+    path_v_dir = pth_vid(v_id)
     path_frames = os.path.join(path_v_dir,'frames')
     remove_ds_store(path_frames)
     path_openmvg = os.path.join(path_v_dir, 'out_openMVG')
@@ -490,4 +502,4 @@ def move_triangles(triangles, path_vid, path_frames, path_feats):
                 pass
         s += 1
 
-    return(len(t))
+    return(path_new_folder)
