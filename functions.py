@@ -220,7 +220,7 @@ def openmvg_colors(path_incr):
     """Functions to call openMVG_main_ComputeSfM_DataColor to add
     the colors on the points of the 3D model"""
 
-    path_sfm = os.path.join(path_incr, 'sfm_data.bin')
+    path_sfm = pth_sfm(pth=path_incr)
     path_ply = os.path.join(path_incr, 'sfm_data_color.ply')
 
     cmd = 'openMVG_main_ComputeSfM_DataColor -i {} -o {}'.format(path_sfm, path_ply)
@@ -287,7 +287,7 @@ def sfm_it(v_id, iter_number, path_frames, path_openmvg):
 
     # Computing features
     path_sfm = os.path.join(path_out_dir, 'sfm_data.json')
-    path_features = os.path.join(path_out_dir, 'out_features')
+    path_features = os.path.join(path_out_dir, 'features')
     make_dir(path_features)
 
     openmvg_features(path_sfm=path_sfm, path_features=path_features)
@@ -296,7 +296,7 @@ def sfm_it(v_id, iter_number, path_frames, path_openmvg):
     openmvg_matches(path_sfm=path_sfm, path_matches=path_features)
 
     # Incremental
-    path_incr = os.path.join(path_out_dir, 'out_incremental')
+    path_incr = os.path.join(path_out_dir, 'incremental')
     make_dir(path_incr)
 
     openmvg_incremental(path_sfm=path_sfm, path_matches=path_features, path_incr=path_incr)
@@ -340,8 +340,6 @@ def sfm_loop(v_id):
                path_frames=path_frames,
                path_openmvg=path_openmvg)
         iter_nbr += 1
-
-
 
 
 # Extract Triangles
