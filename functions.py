@@ -119,7 +119,7 @@ def frame_xtrct(v_id, rate=2, sample=False, start=0, stop=60):
     path_frames = os.path.join(path_v_dir, 'frames')
     make_dir(path_frames)
 
-    path_data = path
+    path_data = pth_vid_file(v_id)
 
     # Extract frames using specified rate and format
     path_vid = os.path.join(path_v_dir, path_data)
