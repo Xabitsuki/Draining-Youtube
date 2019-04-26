@@ -73,13 +73,15 @@ def pth_data(v_id):
 def pth_frms(v_id):
     return os.path.join(pth_vid_dir(v_id), 'frames')
 
-def pth_iter0_mtchs(v_id):
-
+def pth_iter0_feats(v_id):
     return os.path.join(pth_vid_dir(v_id),
                         'iter_0',
-                        'features',
-                        'matches.f.txt')
+                        'features')
 
+def pth_iter0_mtchs(v_id):
+
+    return os.path.join(pth_iter0_feats(v_id),
+                        'matches.f.txt')
 
 # Youtube-dl
 
@@ -438,6 +440,8 @@ def move_triangles(triangles, path_vid, path_frames, path_feats):
     from main folder to sub-fub folders created """
     s = 0
     path_sets = os.path.join(path_vid, 'sets')
+    make_dir(path_sets)
+
     for t in triangles:
 
         path_new_folder = os.path.join(path_sets, 'set_{}'.format(s))
