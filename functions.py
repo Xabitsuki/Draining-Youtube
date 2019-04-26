@@ -75,7 +75,7 @@ def pth_frms(v_id):
 
 def pth_iter0_feats(v_id):
     return os.path.join(pth_vid_dir(v_id),
-                        'iter_0',
+                        'iter0',
                         'features')
 
 def pth_iter0_mtchs(v_id):
@@ -483,3 +483,4 @@ def move_triangles(triangles, path_vid, path_frames, path_feats):
                 pass
         s += 1
 
+    return(len(t))
