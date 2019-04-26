@@ -70,6 +70,9 @@ def pth_data(v_id):
     vid_file = [el for el in os.listdir(path_data) if not el.endswith('.info.json')][0]
     return os.path.join(path_data, vid_file)
 
+def pth_frms(v_id):
+    return os.path.join(pth_vid_dir(v_id), 'frames')
+
 def pth_iter0_mtchs(v_id):
 
     return os.path.join(pth_vid_dir(v_id),
@@ -382,6 +385,8 @@ def make_adj_mat(match_list, path_frames):
 
 
 def mtchs_bin_to_mat(path_mtchs, path_frames):
+    """"Returns adjacency matrix provided the path to the matches
+    and the path to the frames (used in iter0)."""
 
     return make_adj_mat(extract_matches(path_mtchs), path_frames)
 
