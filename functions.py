@@ -83,6 +83,14 @@ def pth_iter0_mtchs(v_id):
     return os.path.join(pth_iter0_feats(v_id),
                         'matches.f.txt')
 
+def pth_sfm(pth):
+    """returns path to sfm file if found at location given by pth"""
+
+    sfm = [el for el in os.listdir(pth) if el.startswith('sfm_')][0] # Todo exceptions needed
+
+    return os.path.join(pth,sfm)
+
+
 # Youtube-dl
 
 def url_to_id(url):
@@ -171,7 +179,8 @@ def vid_xtrct(v_id, vid_file, new_vid_file, start=0, stop=30):
 
 def openmvg_list(v_id, frm_dir, out_dir):
     """Calls openMVG for to perform the image listing
-    Generates sfm_data.json file"""
+    Generates sfm_data.json file
+    v_id : needed to get the width of the images out of the info.json file"""
 
     # Get the width of the frames by searching into dictionary of information
     width = get_dic_info(v_id=v_id)['width']
