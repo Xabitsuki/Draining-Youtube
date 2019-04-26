@@ -57,7 +57,7 @@ def pth_vid_dir(v_id):
     return os.path.join(pth_prj(), 'videos', v_id)
 
 
-def pth_vid_file(v_id):
+def pth_data(v_id):
     """returns full path to video file assuming call from main folder"""
 
     path = pth_vid_dir(v_id=v_id)
@@ -69,6 +69,13 @@ def pth_vid_file(v_id):
 
     vid_file = [el for el in os.listdir(path_data) if not el.endswith('.info.json')][0]
     return os.path.join(path_data, vid_file)
+
+def pth_iter0_mtchs(v_id):
+
+    return os.path.join(pth_vid_dir(v_id),
+                        'iter_0',
+                        'features',
+                        'matches.f.txt')
 
 
 # Youtube-dl
@@ -119,7 +126,7 @@ def frame_xtrct(v_id, rate=2, sample=False, start=0, stop=60):
     path_frames = os.path.join(path_v_dir, 'frames')
     make_dir(path_frames)
 
-    path_data = pth_vid_file(v_id)
+    path_data = pth_data(v_id)
 
     # Extract frames using specified rate and format
     path_vid = os.path.join(path_v_dir, path_data)
@@ -142,10 +149,10 @@ def vid_xtrct(v_id, vid_file, new_vid_file, start=0, stop=30):
      ends at ends at stop (in seconds) parameter"""
 
     path_v_dir = pth_vid_dir(v_id=v_id)
-    path_data = path_vid_file(v_id=v_id)
+    path_data = pth_data(v_id=v_id)
     path_new_vid = os.path.join(path_v_dir, new_vid_file)
 
-    cmd_str = 'ffmpeg -i {} -ss {} -t {} -codec copy {}'.format(path_vid_file,
+    cmd_str = 'ffmpeg -i {} -ss {} -t {} -codec copy {}'.format(path_data,
                                                                 start,
                                                                 stop,
                                                                 path_new_vid)
@@ -327,6 +334,7 @@ def sfm_loop(v_id):
 
 
 def line_to_tuple(line):
+    """Used to read matches.f.txt file in extract_matches"""
     return (int(line.split(sep=' ', maxsplit=1)[0]),
             int(line.split(sep=' ', maxsplit=1)[1]))
 
@@ -420,8 +428,8 @@ def split_triangles(adj_mat, tol=30):
     return triangles
 
 
-def move_triangles(triangles, path_frames, path_vid, path_feats):
-    """Functions used to move the frames and their .desc and .feat files
+def move_triangles(triangles, path_vid, path_frames, path_feats):
+    """Function used to move the frames and their .desc and .feat files
     from main folder to sub-fub folders created """
     s = 0
     path_sets = os.path.join(path_vid, 'sets')
