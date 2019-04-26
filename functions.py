@@ -437,7 +437,11 @@ def split_triangles(adj_mat, tol=30):
 
 def move_triangles(triangles, path_vid, path_frames, path_feats):
     """Function used to move the frames and their .desc and .feat files
-    from main folder to sub-fub folders created """
+    from main folder to sub-fub folders created.
+    Generates: - sets/
+               - sets/set_i
+               - sets/set_i/frames
+               - sets/set_i/features"""
     s = 0
     path_sets = os.path.join(path_vid, 'sets')
     make_dir(path_sets)
@@ -450,7 +454,7 @@ def move_triangles(triangles, path_vid, path_frames, path_feats):
         path_frames_n = os.path.join(path_new_folder, 'frames')
         make_dir(path_frames_n)
 
-        path_feats_n = os.path.join(path_new_folder, 'out_features')
+        path_feats_n = os.path.join(path_new_folder, 'features')
         make_dir(path_feats_n)
 
         for i in range(t[0], t[1] + 1):
