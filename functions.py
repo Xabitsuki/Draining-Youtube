@@ -111,15 +111,19 @@ def url_to_id(url):
     return url.split(sep='watch?v=')[1]
 
 
-def yt_dl(url, opts={}):
-    """Call youtube-dl to download a video providing the url"""
-
+def yt_dl(url, opts={}, single=False):
+    """Call youtube-dl to download a video providing the url. By default provides an output template to store all the videos in 
+    a single directory, name them by id and extension and write information in json file"""
+    
     if not opts:
-        # Provide an output template to store all the videos in a single directory,
-        # name them by id and extension and write information in json file
-        opts = {'outtmpl': 'videos/%(id)s/data/%(id)s_%(resolution)s.%(ext)s',
-                'writeinfojson': 'videos/%(id)s/'}
-
+        if single: # if undesired playlist
+            opts = {'outtmpl': 'videos/%(id)s/data/%(id)s_%(resolution)s.%(ext)s',
+                    'writeinfojson': 'videos/%(id)s/',
+                    'noplaylist':'no'}
+        else:
+            opts = {'outtmpl': 'videos/%(id)s/data/%(id)s_%(resolution)s.%(ext)s',
+                    'writeinfojson': 'videos/%(id)s/'}
+    
     with youtube_dl.YoutubeDL(opts) as ydl:
         ydl.download([url])
 
