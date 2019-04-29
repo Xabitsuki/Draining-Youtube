@@ -64,7 +64,8 @@ def pth_vid(v_id):
     """returns full path to video dir assuming call from main folder"""
 
     return os.path.join(pth_prj(), 'videos', v_id)
-
+python3.7/site-packages/IPython/extensions/autoreload.py", line 244, in check
+   
 
 def pth_data(v_id):
     """returns full path to video file assuming call from main folder"""
@@ -108,7 +109,7 @@ def pth_sfm(pth):
 
 def url_to_id(url):
 
-    return url.split(sep='watch?v=')[1]
+    return url.split(sep='watch?v=')[1].split('=')[0]
 
 
 def yt_dl(url, opts={}, single=False):
@@ -122,7 +123,8 @@ def yt_dl(url, opts={}, single=False):
                     'noplaylist':'no'}
         else:
             opts = {'outtmpl': 'videos/%(id)s/data/%(id)s_%(resolution)s.%(ext)s',
-                    'writeinfojson': 'videos/%(id)s/'}
+                    'writeinfojson': 'videos/%(id)s/', 
+                    'playlist_items': '0,1,2,3,4'}
     
     with youtube_dl.YoutubeDL(opts) as ydl:
         ydl.download([url])
@@ -171,7 +173,8 @@ def frame_xtrct(v_id, rate=2, sample=False, start=0, stop=60):
 
         cmd = 'ffmpeg -i {} -r {} -f image2 {}/frame%04d.png'\
             .format(path_vid, rate, path_frames)
-    os.system(cmd)
+    os.system(cmd)python3.7/site-packages/IPython/extensions/autoreload.py", line 244, in check
+   
 
 
 def vid_xtrct(v_id, new_vid_file, start=0, stop=30):
