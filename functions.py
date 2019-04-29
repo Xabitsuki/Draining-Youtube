@@ -62,10 +62,7 @@ def get_v_id(pth):
 
 def pth_vid(v_id):
     """returns full path to video dir assuming call from main folder"""
-
     return os.path.join(pth_prj(), 'videos', v_id)
-python3.7/site-packages/IPython/extensions/autoreload.py", line 244, in check
-   
 
 def pth_data(v_id):
     """returns full path to video file assuming call from main folder"""
@@ -108,11 +105,11 @@ def pth_sfm(pth):
 # Youtube-dl
 
 def url_to_id(url):
-
+    """Take an url and return the youtube id that it contains"""
     return url.split(sep='watch?v=')[1].split('=')[0]
 
 
-def yt_dl(url, opts={}, single=False):
+def yt_dl(url, playlist_items='',single=False,opts={}):
     """Call youtube-dl to download a video providing the url. By default provides an output template to store all the videos in 
     a single directory, name them by id and extension and write information in json file"""
     
@@ -124,7 +121,7 @@ def yt_dl(url, opts={}, single=False):
         else:
             opts = {'outtmpl': 'videos/%(id)s/data/%(id)s_%(resolution)s.%(ext)s',
                     'writeinfojson': 'videos/%(id)s/', 
-                    'playlist_items': '0,1,2,3,4'}
+                    'playlist_items':playlist_items}
     
     with youtube_dl.YoutubeDL(opts) as ydl:
         ydl.download([url])
@@ -173,9 +170,7 @@ def frame_xtrct(v_id, rate=2, sample=False, start=0, stop=60):
 
         cmd = 'ffmpeg -i {} -r {} -f image2 {}/frame%04d.png'\
             .format(path_vid, rate, path_frames)
-    os.system(cmd)python3.7/site-packages/IPython/extensions/autoreload.py", line 244, in check
-   
-
+        
 
 def vid_xtrct(v_id, new_vid_file, start=0, stop=30):
     """creates a copy of the video that begins at start (in seconds) parameter and
