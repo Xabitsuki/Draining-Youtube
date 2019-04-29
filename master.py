@@ -14,7 +14,9 @@ if __name__ == '__main__':
     # Todo: run first iter_0 for each video + split in sets
     for id in id_lst:
         iter0(id)
-        make_sets(id)
-
+        pth_sets = make_sets(id)
+        remove_ds_store(pth_sets)
+        for set in path_sets:
+            sfm_pipe
     # Todo: incremental looping and cleaning
 

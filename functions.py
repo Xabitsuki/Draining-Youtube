@@ -60,7 +60,6 @@ def get_v_id(pth):
     return pth.split(sep=pth_vids())[1].split(sep='/')[1]
 
 
-
 def pth_vid(v_id):
     """returns full path to video dir assuming call from main folder"""
 
