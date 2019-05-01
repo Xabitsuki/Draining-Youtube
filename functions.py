@@ -144,33 +144,29 @@ def get_dic_info(v_id):
 # ffmpeg Wrapping
 
 
-def xtrct_frame(v_id, rate=2, sample=False, start=0, stop=60):
+def xtrct_frame(v_id, sample=False, rate=2, start=0, stop=60):
 
     """ Creates a directory that contains the frames the extracted
     frames and extracts the frames calling avconv"""
 
     # Create "frame" directory:
     path_v_dir = pth_vid(v_id)
-
     path_frames = os.path.join(path_v_dir, 'frames')
     make_dir(path_frames)
 
-    path_data = pth_data(v_id)
-
+    path_data = pth_data(v_id)git s
     # Extract frames using specified rate and format
     path_vid = os.path.join(path_v_dir, path_data)
 
     if sample:
 
-        cmd = 'ffmpeg -i {} -ss {} -t {} -r {} -f image2 {}/frame%04d.png'\
-              .format(path_vid, start, stop, rate, path_frames)
-        print(cmd)
+        cmd = 'ffmpeg -i {} -ss {} -t {} -r {} -f image2 {}/frame%04d.png'.format(path_vid, start, stop, rate, path_frames)
 
     else:
 
-        cmd = 'ffmpeg -i {} -r {} -f image2 {}/frame%04d.png'\
-            .format(path_vid, rate, path_frames)
-        
+        cmd = 'ffmpeg -i {} -r {} -f image2 {}/frame%04d.png'.format(path_vid, rate, path_frames)
+
+    os.system(cmd)
 
 def vid_xtrct(v_id, new_vid_file, start=0, stop=30):
     """creates a copy of the video that begins at start (in seconds) parameter and
