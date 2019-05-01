@@ -15,9 +15,8 @@ def capture(url, sample=False):
 
 def iter0(v_id):
     """Function used to make the first iteration of processing loop"""
-
     # Make iter0 dir
-    path_dir = pth_vid_dir(v_id)
+    path_dir = pth_vid(v_id)
     path_iter0 = os.path.join(path_dir, 'iter0')
     make_dir(path_iter0)
 
@@ -37,6 +36,9 @@ def iter0(v_id):
     openmvg_matches(path_sfm=path_sfm, path_matches=path_feat)
 
 
+
+
+
 def make_sets(v_id):
     """Used after the iter_0 function ran to separate the frames into sets.
     Return the path the to the sets folder"""
@@ -45,7 +47,7 @@ def make_sets(v_id):
                                                  path_frames=pth_frms(v_id)))
 
     return move_triangles(triangles=triangles,
-                          path_vid=pth_vid_dir(v_id),
+                          path_vid=pth_vid(v_id),
                           path_frames=pth_frms(v_id),
                           path_feats=pth_iter0_feats(v_id))
 
