@@ -144,7 +144,7 @@ def get_dic_info(v_id):
 # ffmpeg Wrapping
 
 
-def frame_xtrct(v_id, rate=2, sample=False, start=0, stop=60):
+def xtrct_frame(v_id, rate=2, sample=False, start=0, stop=60):
 
     """ Creates a directory that contains the frames the extracted
     frames and extracts the frames calling avconv"""
