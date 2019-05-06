@@ -64,6 +64,13 @@ def pth_vid(v_id):
     """returns full path to video dir assuming call from main folder"""
     return os.path.join(pth_prj(), 'videos', v_id)
 
+
+def pth_plylst(name):
+
+    return os.path.join(pth_vids(), name)
+
+
+
 def pth_data(v_id):
     """returns full path to video file assuming call from main folder"""
 
@@ -109,7 +116,7 @@ def url_to_id(url):
     return url.split(sep='watch?v=')[1].split('=')[0]
 
 
-def yt_dl(url, playlist_items='',single=False,opts={}):
+def yt_dl(url, playlist, n_items='', single=False, opts={}):
     """Call youtube-dl to download a video providing the url. By default provides an output template to store all the videos in 
     a single directory, name them by id and extension and write information in json file"""
     
@@ -119,9 +126,9 @@ def yt_dl(url, playlist_items='',single=False,opts={}):
                     'writeinfojson': 'videos/%(id)s/',
                     'noplaylist':'no'}
         else:
-            opts = {'outtmpl': 'videos/%(id)s/data/%(id)s_%(resolution)s.%(ext)s',
-                    'writeinfojson': 'videos/%(id)s/', 
-                    'playlist_items':playlist_items}
+            opts = {'outtmpl': 'videos/{}/%(id)s/data/%(id)s_%(resolution)s.%(ext)s'.format(playlist),
+                    'writeinfojson': 'videos/{}/%(id)s/'.format(playlist),
+                    'playlist_items': n_items}
     
     with youtube_dl.YoutubeDL(opts) as ydl:
         ydl.download([url])
@@ -154,7 +161,7 @@ def xtrct_frame(v_id, sample=False, rate=2, start=0, stop=60):
     path_frames = os.path.join(path_v_dir, 'frames')
     make_dir(path_frames)
 
-    path_data = pth_data(v_id)git s
+    path_data = pth_data(v_id)
     # Extract frames using specified rate and format
     path_vid = os.path.join(path_v_dir, path_data)
 
