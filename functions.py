@@ -50,54 +50,48 @@ def pth_prj(prj_name='Draining-Youtube'):
     split = cur_dir.split(prj_name)
     return os.path.join(split[0], prj_name)
 
+
 def pth_vids():
     return os.path.join(pth_prj(), 'videos')
 
 
-def get_v_id(pth):
-    """Retrieve v_id from path that contains it"""
-
-    return pth.split(sep=pth_vids())[1].split(sep='/')[1]
-
-
-def pth_vid(v_id):
-    """returns full path to video dir assuming call from main folder"""
-    return os.path.join(pth_prj(), 'videos', v_id)
-
-
 def pth_plylst(name):
 
-    return os.path.join(pth_vids(), name)
+    pth = os.path.join(pth_vids(), name)
+    remove_ds_store(pth)
+    return(pth)
 
 
-def pth_data(v_id):
-    """returns full path to video file assuming call from main folder"""
+def pth_vid(v_id, plylst=''):
+    """Returns full path to video dir assuming call from main folder"""
+    if not plylst:
+        return os.path.join(pth_vids(), v_id)
 
-    path = pth_vid(v_id=v_id)
-    path_data = os.path.join(path, 'data')
+    else:
+        return os.path.join(pth_plylst(name=plylst), v_id)
 
+
+def pth_data(v_id, plylst=''):
+    """Returns full path to video file assuming call from main folder"""
+    path_vid = pth_vid(v_id=v_id, plylst=plylst)
+    path_data = os.path.join(path_vid, 'data')
     remove_ds_store(path_data)
 
-    # Look for file that is .info.json
-
+    # Look for file that is not .info.json
     vid_file = [el for el in os.listdir(path_data) if not el.endswith('.info.json')][0]
     return os.path.join(path_data, vid_file)
 
 
-def pth_frms(v_id):
-    return os.path.join(pth_vid(v_id), 'frames')
+def pth_frms(v_id, plylst=''):
+    return os.path.join(pth_vid(v_id, plylst=plylst), 'frames')
 
 
-def pth_iter0_feats(v_id):
-    return os.path.join(pth_vid(v_id),
-                        'iter0',
-                        'features')
+def pth_iter0_feats(v_id, plylst=''):
+    return os.path.join(pth_vid(v_id, plylst=plylst), 'iter0', 'features')
 
 
-def pth_iter0_mtchs(v_id):
-
-    return os.path.join(pth_iter0_feats(v_id),
-                        'matches.f.txt')
+def pth_iter0_mtchs(v_id, plylst=''):
+    return os.path.join(pth_iter0_feats(v_id, plylst=plylst),'matches.f.txt')
 
 
 def pth_sfm(pth):
@@ -106,6 +100,12 @@ def pth_sfm(pth):
     sfm = [el for el in os.listdir(pth) if el.startswith('sfm_')][0]  # Todo exceptions needed
 
     return os.path.join(pth, sfm)
+
+
+def get_v_id(pth):
+    """Retrieve v_id from path that contains it"""
+
+    return pth.split(sep=pth_vids())[1].split(sep='/')[1]
 
 
 # Youtube-dl
