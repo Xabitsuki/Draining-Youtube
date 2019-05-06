@@ -37,9 +37,9 @@ def remove_ds_store(path):
         os.remove(path_ds_store)
 
 
-def make_dir(dir_name):
-    if not os.path.isdir(dir_name):
-        os.mkdir(dir_name)
+def make_dir(pth_dir):
+    if not os.path.isdir(pth_dir):
+        os.mkdir(pth_dir)
 
 
 # Get paths
@@ -86,8 +86,10 @@ def pth_data(v_id, plylst=''):
 def pth_frms(v_id, plylst=''):
     return os.path.join(pth_vid(v_id, plylst=plylst), 'frames')
 
+
 def pth_iter0(v_id, plylst=''):
     return os.path.join(pth_vid(v_id, plylst),'iter0')
+
 
 def pth_iter0_feats(v_id, plylst=''):
     return os.path.join(pth_vid(v_id, plylst=plylst), 'iter0', 'features')
@@ -95,6 +97,10 @@ def pth_iter0_feats(v_id, plylst=''):
 
 def pth_iter0_mtchs(v_id, plylst=''):
     return os.path.join(pth_iter0_feats(v_id, plylst=plylst),'matches.f.txt')
+
+
+def pth_sets(v_id, plylst):
+    return os.path.join(pth_vid(v_id, plylst), 'sets')
 
 
 def pth_sfm(pth):
@@ -130,12 +136,12 @@ def gen_items(n_items):
     return items
 
 
-def yt_dl(url, playlist, n_items, single=False, opts={}):
+def yt_dl(url, playlist='', n_items=1, opts={}):
     """Call youtube-dl to download a video providing the url. By default provides an output template to store all the videos in 
     a single directory, name them by id and extension and write information in json file"""
     
     if not opts:
-        if single: # if undesired playlist
+        if not playlist:
             opts = {'outtmpl': 'videos/%(id)s/data/%(id)s_%(resolution)s.%(ext)s',
                     'writeinfojson': 'videos/%(id)s/',
                     'noplaylist':'no'}
@@ -150,10 +156,12 @@ def yt_dl(url, playlist, n_items, single=False, opts={}):
         ydl.download([url])
 
 
-def get_dic_info(pth_data):
+def get_dic_info(pth_vid):
     """Load the info dictionnary created by youtube-dl when the video was downloaded."""
+    pth_data = os.path.join(pth_vid, 'data')
+
     list_ = [el for el in os.listdir(pth_data) if el.endswith('.info.json')]
-    path_info = os.path.join(path_data, list_[0])
+    path_info = os.path.join(pth_data, list_[0])
 
     with open(path_info) as f:
         dic_info = json.load(f)
@@ -164,27 +172,24 @@ def get_dic_info(pth_data):
 # ffmpeg Wrapping
 
 
-def xtrct_frame(v_id, sample=False, rate=2, start=0, stop=60):
+def xtrct_frame(v_id, plylst='', sample=False, rate=2, start=0, stop=60):
 
     """ Creates a directory that contains the frames the extracted
     frames and extracts the frames calling avconv"""
 
     # Create "frame" directory:
-    path_v_dir = pth_vid(v_id)
-    path_frames = os.path.join(path_v_dir, 'frames')
-    make_dir(path_frames)
 
-    path_data = pth_data(v_id)
-    # Extract frames using specified rate and format
-    path_vid = os.path.join(path_v_dir, path_data)
+    path_frames = pth_frms(v_id, plylst)
+    make_dir(path_frames)
+    path_data = pth_data(v_id, plylst)
 
     if sample:
 
-        cmd = 'ffmpeg -i {} -ss {} -t {} -r {} -f image2 {}/frame%04d.png'.format(path_vid, start, stop, rate, path_frames)
+        cmd = 'ffmpeg -i {} -ss {} -t {} -r {} -f image2 {}/frame%04d.png'.format(path_data, start, stop, rate, path_frames)
 
     else:
 
-        cmd = 'ffmpeg -i {} -r {} -f image2 {}/frame%04d.png'.format(path_vid, rate, path_frames)
+        cmd = 'ffmpeg -i {} -r {} -f image2 {}/frame%04d.png'.format(path_data, rate, path_frames)
 
     os.system(cmd)
 
@@ -206,13 +211,13 @@ def vid_xtrct(v_id, new_vid_file, start=0, stop=30):
 # OpenMVG wrapping
 
 
-def openmvg_list(pth_data, pth_frms, pth_out):
+def openmvg_list(pth_vid, pth_frms, pth_out):
     """Calls openMVG for to perform the image listing
     Generates sfm_data.json file
     v_id : needed to get the width of the images out of the info.json file"""
 
     # Get the width of the frames by searching into dictionary of information
-    width = get_dic_info(pth_data)['width']
+    width = get_dic_info(pth_vid)['width']
 
     cmd = "openMVG_main_SfMInit_ImageListing -i {} -o {} -f {}".format(pth_frms, pth_out, width)
 
