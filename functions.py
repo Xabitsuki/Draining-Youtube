@@ -44,6 +44,7 @@ def make_dir(dir_name):
 
 # Get paths
 
+
 def pth_prj(prj_name='Draining-Youtube'):
 
     cur_dir = os.getcwd()
@@ -85,6 +86,8 @@ def pth_data(v_id, plylst=''):
 def pth_frms(v_id, plylst=''):
     return os.path.join(pth_vid(v_id, plylst=plylst), 'frames')
 
+def pth_iter0(v_id, plylst=''):
+    return os.path.join(pth_vid(v_id, plylst),'iter0')
 
 def pth_iter0_feats(v_id, plylst=''):
     return os.path.join(pth_vid(v_id, plylst=plylst), 'iter0', 'features')
@@ -109,6 +112,7 @@ def get_v_id(pth):
 
 
 # Youtube-dl
+
 
 def url_to_id(url):
     """Take an url and return the youtube id that it contains"""
@@ -146,12 +150,9 @@ def yt_dl(url, playlist, n_items, single=False, opts={}):
         ydl.download([url])
 
 
-def get_dic_info(v_id):
+def get_dic_info(pth_data):
     """Load the info dictionnary created by youtube-dl when the video was downloaded."""
-
-    path_data = os.path.join(pth_vid(v_id=v_id), 'data')
-
-    list_ = [el for el in os.listdir(path_data) if el.endswith('.info.json')]
+    list_ = [el for el in os.listdir(pth_data) if el.endswith('.info.json')]
     path_info = os.path.join(path_data, list_[0])
 
     with open(path_info) as f:
@@ -205,15 +206,15 @@ def vid_xtrct(v_id, new_vid_file, start=0, stop=30):
 # OpenMVG wrapping
 
 
-def openmvg_list(v_id, frm_dir, out_dir):
+def openmvg_list(pth_data, pth_frms, pth_out):
     """Calls openMVG for to perform the image listing
     Generates sfm_data.json file
     v_id : needed to get the width of the images out of the info.json file"""
 
     # Get the width of the frames by searching into dictionary of information
-    width = get_dic_info(v_id=v_id)['width']
+    width = get_dic_info(pth_data)['width']
 
-    cmd = "openMVG_main_SfMInit_ImageListing -i {} -o {} -f {}".format(frm_dir, out_dir, width)
+    cmd = "openMVG_main_SfMInit_ImageListing -i {} -o {} -f {}".format(pth_frms, pth_out, width)
 
     os.system(command=cmd)
 
