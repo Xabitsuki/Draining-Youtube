@@ -70,7 +70,6 @@ def pth_plylst(name):
     return os.path.join(pth_vids(), name)
 
 
-
 def pth_data(v_id):
     """returns full path to video file assuming call from main folder"""
 
@@ -116,7 +115,18 @@ def url_to_id(url):
     return url.split(sep='watch?v=')[1].split('=')[0]
 
 
-def yt_dl(url, playlist, n_items='', single=False, opts={}):
+def gen_items(n_items):
+    """"Function used in yt_dl to generate the string of indices  corresponding to the desired
+    number of items to be downloaded."""
+
+    items = '1'
+    for ii in range(2,n_items):
+        items = '{},{}'.format(items, ii)
+    items = '{},{}'.format(items, n_items)
+    return items
+
+
+def yt_dl(url, playlist, n_items, single=False, opts={}):
     """Call youtube-dl to download a video providing the url. By default provides an output template to store all the videos in 
     a single directory, name them by id and extension and write information in json file"""
     
@@ -126,9 +136,11 @@ def yt_dl(url, playlist, n_items='', single=False, opts={}):
                     'writeinfojson': 'videos/%(id)s/',
                     'noplaylist':'no'}
         else:
+            # Generate string of items
+            items = gen_items(n_items=n_items)
             opts = {'outtmpl': 'videos/{}/%(id)s/data/%(id)s_%(resolution)s.%(ext)s'.format(playlist),
                     'writeinfojson': 'videos/{}/%(id)s/'.format(playlist),
-                    'playlist_items': n_items}
+                    'playlist_items': items}
     
     with youtube_dl.YoutubeDL(opts) as ydl:
         ydl.download([url])
