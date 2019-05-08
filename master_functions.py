@@ -17,6 +17,7 @@ def get_plylst_id(pth_vid):
 
     return
 
+## TODO implement get_pths_vids(plylst)
 
 # Make sets
 def make_sets(v_id, plylst=''):
@@ -26,7 +27,7 @@ def make_sets(v_id, plylst=''):
     triangles = split_triangles(mtchs_bin_to_mat(path_mtchs=pth_iter0_mtchs(v_id, plylst),
                                                  path_frames=pth_frms(v_id, plylst)))
 
-    move_triangles(triangles=triangles,
+    return move_triangles(triangles=triangles,
                           path_vid=pth_vid(v_id, plylst),
                           path_frames=pth_frms(v_id, plylst),
                           path_feats=pth_iter0_feats(v_id, plylst))
@@ -59,9 +60,9 @@ def iter0(path_vid, sample=False):
     openmvg_matches(path_sfm=path_sfm, path_matches=path_feat)
 
     # Make sets
-    make_sets(v_id, plylst)
+    pth_sets =  make_sets(v_id, plylst)
     remove_ds_store(pth_sets())
-
+    return pth_sets
 
 def sfm_pipe(pth_set):
     """Function that performs the sfm pipline given the path to
