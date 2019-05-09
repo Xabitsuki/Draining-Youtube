@@ -193,6 +193,7 @@ def xtrct_frame(v_id, plylst='', sample=False, rate=2, start=0, stop=60):
 
     os.system(cmd)
 
+
 def vid_xtrct(v_id, new_vid_file, start=0, stop=30):
     """creates a copy of the video that begins at start (in seconds) parameter and
      ends at ends at stop (in seconds) parameter"""
@@ -386,7 +387,8 @@ def line_to_tuple(line):
 
 
 def extract_matches(path_mtchs):
-    """function to read the matches.f.txt file to extract the matches"""
+    """function to read the matches.f.txt file to extract the matches.
+    Return: match_list"""
 
     # Open and read matches file
     f = open(path_mtchs, mode='r')
@@ -427,7 +429,7 @@ def make_adj_mat(match_list, path_frames):
     return adj_mat
 
 
-def mtchs_bin_to_mat(path_mtchs, path_frames):
+def bin_matches_to_adja_mat(path_mtchs, path_frames):
     """"Returns adjacency matrix provided the path to the matches
     and the path to the frames (used in iter0)."""
 
@@ -435,7 +437,7 @@ def mtchs_bin_to_mat(path_mtchs, path_frames):
 
 
 def split_triangles(adj_mat, tol=30):
-    """Provides the provides a list containing tuples that decribe
+    """Provides a list containing tuples that describe
     triangles of images that match : the triangle are composed of the points
     (i_min, i_min+1), (i_min, i_max), (i_max-1, i_max) in the adjacency matrix """
 
@@ -445,7 +447,6 @@ def split_triangles(adj_mat, tol=30):
     i_max = 0
 
     for i in range(0, n):
-
         # Retrieve non zero value for current line
         non_zer = np.nonzero(adj_mat[i])[0]
 
@@ -458,7 +459,7 @@ def split_triangles(adj_mat, tol=30):
                 length = len(non_zer)
                 j = 0
 
-                while j != length and abs(non_zer[j+1] - non_zer[j]) < tol:
+                while j != length-1 and abs(non_zer[j+1] - non_zer[j]) < tol:
                     j += 1
 
             # no far image: take them all

@@ -35,7 +35,6 @@ def make_sets(v_id, plylst=''):
 
 def iter0(path_vid, sample=False):
     """Function used to make the first iteration of processing loop"""
-
     v_id , plylst = get_plylst_id(path_vid)
 
     # Extract frames
