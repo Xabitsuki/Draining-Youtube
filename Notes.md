@@ -20,6 +20,11 @@ video of youtube at the adress https://youtube.com/watch?v=RgKAFK5djSk
 
 extracting frames from a 30 sec 4k video takes ~ 
 
+#### 1920x1080 6 minutes video : 
+
+- storage required : ~3Go
+- execution time : 
+
 
 ### Details 
 
