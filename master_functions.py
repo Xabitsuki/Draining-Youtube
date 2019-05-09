@@ -1,4 +1,6 @@
 from functions import *
+import os
+from multiprocessing import Process, Queue, cpu_count
 
 def get_plylst_id(pth_vid):
 
@@ -92,3 +94,63 @@ def sfm_pipe(pth_set, width):
 
     openmvg_colors(pth_incr=path_incr)
 
+
+class Worker:
+
+    def __init__(self, task_queue):
+        self.q = task_queue
+
+
+    def Qiter0(self, pth_vid):
+        """Performs iter0() and enqueues an sfm_pipe process with the generated sets."""
+        path_set_dir, width = iter0(path_vid=pth_vid)
+        pth_sets = [os.path.join(path_set_dir, el) for el in os.listdir(path_set_dir)]
+
+        # Enqueue next tasks
+        for pth_set in pth_sets:
+            args = (pth_set, width)
+            self.q.put(('sfm_pipe', args))
+
+
+    def sfm_pipe(self, pth, width):
+        sfm_pipe(pth_set=pth, width=width)
+
+
+    def work(self, func, args):
+
+        if func == 'Qiter0':
+            self.Qiter0(*args)
+
+        elif func == 'sfm_pipe':
+            print('SFM PIPE')
+            print(*args)
+            self.sfm_pipe(*args)
+
+
+def worker_exec(task_queue):
+    # Work until no tasks are pending
+
+    worker = Worker(task_queue)
+
+    while not task_queue.empty():
+        # instanciate worker
+        func, args = task_queue.get()
+
+        worker.work(func, args)
+
+
+def drain(number_processes, plylsts=[], vids=[], args0=None):
+    # Enqueue Qiter0 tasks:
+    Q = Queue()
+    for plylst in plylsts:
+        for v_id in os.listdir(pth_plylst(plylst)):
+            args = (pth_vid(v_id, plylst),)
+            Q.put(('Qiter0', args, args0))
+
+    for v_id in vids:
+        args = (pth_vid(v_id),)
+        Q.put(('Qiter0', args, args0))
+
+    for i in range(number_processes):
+        p = Process(target=worker_exec, args=(Q,))
+        p.start()

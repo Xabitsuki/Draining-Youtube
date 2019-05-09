@@ -44,10 +44,4 @@ extracting frames from a 30 sec 4k video takes ~
 
 ### TODO
 
-- faire des moves dans le ficheir frame au moment de la 3D
-
-### Possible improvements : 
-
-- parallelize some actions : 
-    - such as rien the moving of the frames
-    
+implement the remove of unecessary files 
