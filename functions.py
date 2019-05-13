@@ -92,7 +92,7 @@ def pth_data(v_id, plylst=''):
 def pth_frms(v_id, plylst=''):
     return os.path.join(pth_vid(v_id, plylst=plylst), 'frames')
 
-git
+
 def pth_iter0(v_id, plylst=''):
     return os.path.join(pth_vid(v_id, plylst),'iter0')
 
@@ -260,12 +260,13 @@ def openmvg_colors(pth_incr):
     os.system(cmd)
 
 
-def openmvg_bin_to_json(path_data_bin, path_data_json):
+def openmvg_bin_to_json(pth_bin):
     """Call openMVG to convert to convert the binary file to json"""
-
-    cmd = "openMVG_main_ConvertSfM_DataFormat -i {} -o {}".format(path_data_bin, path_data_json)
+    pth = pth_bin.split(sep='bin')[0]
+    pth_json = pth + 'json'
+    cmd = "openMVG_main_ConvertSfM_DataFormat -i {} -o {}".format(pth_bin, pth_json)
     os.system(cmd)
-
+    return pth_json
 
 # Loop / Parallelize
 
