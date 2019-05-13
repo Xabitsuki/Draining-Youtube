@@ -32,13 +32,14 @@ def make_sets(v_id, plylst=''):
                           path_feats=pth_iter0_feats(v_id, plylst))
 
 
-def iter0(path_vid, sample=False, frame_force=False, feature_force=False, match_force=False):
-    """Function used to make the first iteration of processing loop"""
-    v_id , plylst = get_plylst_id(path_vid)
+def iter0(path_vid, rate, frame_force=False, feature_force=False, match_force=False, sample=False):
+    """Function used to make the first iteration of processing loop.
+    Return: path_sets, width"""
+    v_id, plylst = get_plylst_id(path_vid)
 
     # Extract frames
     if frame_force or not os.path.isdir(pth_frms(v_id, plylst)):
-        xtrct_frame(v_id, plylst, sample)
+        xtrct_frame(v_id, plylst, sample, rate)
 
     # Make iter0 dir
     pth_it0 = pth_iter0(v_id, plylst)
@@ -60,6 +61,7 @@ def iter0(path_vid, sample=False, frame_force=False, feature_force=False, match_
 
     # Compute  matches
     if match_force or not os.path.isfile(pth_iter0_mtchs(v_id, plylst)):
+        path_sfm = os.path.join(pth_it0, 'sfm_data.json')
         cmd = 'openMVG_main_ComputeMatches -i {} -o {}'.format(path_sfm, path_feat)
         os.system(cmd)
 
@@ -101,7 +103,7 @@ class Worker:
         self.q = task_queue
 
 
-    def Qiter0(self, pth_vid):
+    def Qiter0(self, args):
         """Performs iter0() and enqueues an sfm_pipe process with the generated sets."""
         path_set_dir, width = iter0(path_vid=pth_vid)
         pth_sets = [os.path.join(path_set_dir, el) for el in os.listdir(path_set_dir)]
@@ -139,17 +141,19 @@ def worker_exec(task_queue):
         worker.work(func, args)
 
 
-def drain(number_processes, plylsts=[], vids=[], args0=None):
+def drain(number_processes, rate, plylsts=[], vids=[]):
     # Enqueue Qiter0 tasks:
     Q = Queue()
     for plylst in plylsts:
         for v_id in os.listdir(pth_plylst(plylst)):
-            args = (pth_vid(v_id, plylst),)
-            Q.put(('Qiter0', args, args0))
+            args = (pth_vid(v_id, plylst),
+                    rate)
+            Q.put(('Qiter0', args))
 
     for v_id in vids:
-        args = (pth_vid(v_id),)
-        Q.put(('Qiter0', args, args0))
+        args = (pth_vid(v_id),
+                rate)
+        Q.put(('Qiter0', args))
 
     for i in range(number_processes):
         p = Process(target=worker_exec, args=(Q,))
