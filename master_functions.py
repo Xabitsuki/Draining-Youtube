@@ -1,23 +1,23 @@
 from functions import *
 import os
-from multiprocessing import Process, Queue, cpu_count
+from multiprocessing import Process, Queue, Manager
 
-def get_plylst_id(pth_vid):
 
-    split = pth_vid.split(sep=pth_vids())[1].split('/')
+def get_plylst_id(path_vid):
+
+    split = path_vid.split(sep=pth_vids())[1].split('/')
     if len(split) == 3:
 
         plylst = split[1]
-        id = split[2]
+        id_ = split[2]
 
-        return id, plylst
+        return id_, plylst
 
     elif len(split) == 2:
 
-        id =split[1]
-        return id , ''
+        id_ = split[1]
+        return id_, ''
 
-## TODO implement get_pths_vids(plylst)
 
 def make_sets(v_id, plylst=''):
     """Used after the iter_0 function ran to separate the frames into sets.
@@ -68,7 +68,7 @@ def iter0(path_vid, rate, frame_force=False, feature_force=False, match_force=Fa
     # Make sets
     path_sets = pth_sets(v_id, plylst)
     if match_force or not os.path.isdir(path_sets):
-        path_sets =  make_sets(v_id, plylst)
+        path_sets = make_sets(v_id, plylst)
 
     remove_ds_store(path_sets)
     return path_sets, width
@@ -99,62 +99,70 @@ def sfm_pipe(pth_set, width):
 
 class Worker:
 
-    def __init__(self, task_queue):
-        self.q = task_queue
-
+    def __init__(self, Q):
+        self.Q = Q
 
     def Qiter0(self, args):
         """Performs iter0() and enqueues an sfm_pipe process with the generated sets."""
-        path_set_dir, width = iter0(path_vid=pth_vid)
-        pth_sets = [os.path.join(path_set_dir, el) for el in os.listdir(path_set_dir)]
-
+        path_set_dir, width = iter0(*args)
+        path_sets = [os.path.join(path_set_dir, el) for el in os.listdir(path_set_dir)]
+        print(width)
         # Enqueue next tasks
-        for pth_set in pth_sets:
-            args = (pth_set, width)
-            self.q.put(('sfm_pipe', args))
+        for path_set in path_sets:
+            args = (path_set, width)
+            self.Q.put(('sfm_pipe', args))
 
-
-    def sfm_pipe(self, pth, width):
-        sfm_pipe(pth_set=pth, width=width)
-
+    def sfm_pipe(self, args):
+        sfm_pipe(*args)
 
     def work(self, func, args):
 
         if func == 'Qiter0':
-            self.Qiter0(*args)
+            self.Qiter0(args)
 
         elif func == 'sfm_pipe':
-            print('SFM PIPE')
-            print(*args)
-            self.sfm_pipe(*args)
+            self.sfm_pipe(args)
 
 
-def worker_exec(task_queue):
-    # Work until no tasks are pending
+def worker_exec(Q, wip_l):
+    # instanciate worker
+    worker = Worker(Q)
 
-    worker = Worker(task_queue)
+    # get task and append to wip list
+    func, args = Q.get()
+    wip_l.append(func)
+    worker.work(func, args)
+    # remove from list after it finishes
+    wip_l.remove(func)
 
-    while not task_queue.empty():
-        # instanciate worker
-        func, args = task_queue.get()
 
-        worker.work(func, args)
-
-
-def drain(number_processes, rate, plylsts=[], vids=[]):
+def drain(rate, f_frms, f_ftrs, f_mtchs, sample,
+          plylsts=[], vids=[]):
     # Enqueue Qiter0 tasks:
     Q = Queue()
+
+    manager = Manager()
+    wip_l = manager.list()
+
     for plylst in plylsts:
         for v_id in os.listdir(pth_plylst(plylst)):
             args = (pth_vid(v_id, plylst),
-                    rate)
+                    rate, f_frms, f_ftrs, f_mtchs, sample)
             Q.put(('Qiter0', args))
 
     for v_id in vids:
+        print('appending job from vids :{}'.format(v_id))
         args = (pth_vid(v_id),
-                rate)
+                rate, f_frms, f_ftrs, f_mtchs, sample)
         Q.put(('Qiter0', args))
 
-    for i in range(number_processes):
-        p = Process(target=worker_exec, args=(Q,))
-        p.start()
+    while True:
+        if not Q.empty():
+
+            p = Process(target=worker_exec, args=(Q, wip_l))
+            p.start()
+
+        else:
+            if len(wip_l) == 0:
+                print('Finish Draining')
+                break
