@@ -1,6 +1,8 @@
-from functions import *
 import os
-from multiprocessing import Process, Queue, Manager
+from multiprocessing import  Process
+
+from functions import *
+
 
 
 def get_plylst_id(path_vid):
@@ -97,72 +99,32 @@ def sfm_pipe(pth_set, width):
     openmvg_colors(pth_incr=path_incr)
 
 
-class Worker:
+def master_iter0(args):
+    """Performs iter0() and launch sfm_pipe processes with
+    the generated sets."""
 
-    def __init__(self, Q):
-        self.Q = Q
-
-    def Qiter0(self, args):
-        """Performs iter0() and enqueues an sfm_pipe process with the generated sets."""
-        path_set_dir, width = iter0(*args)
-        path_sets = [os.path.join(path_set_dir, el) for el in os.listdir(path_set_dir)]
-        print(width)
-        # Enqueue next tasks
-        for path_set in path_sets:
-            args = (path_set, width)
-            self.Q.put(('sfm_pipe', args))
-
-    def sfm_pipe(self, args):
-        sfm_pipe(*args)
-
-    def work(self, func, args):
-
-        if func == 'Qiter0':
-            self.Qiter0(args)
-
-        elif func == 'sfm_pipe':
-            self.sfm_pipe(args)
+    path_set_dir, width = iter0(*args)
+    pth_sets = [os.path.join(path_set_dir, el) for el in os.listdir(path_set_dir)]
+    # start new process
+    for pth_set in pth_sets:
+        args = (pth_set, width)
+        Process(target=sfm_pipe, args=args).start()
 
 
-def worker_exec(Q, wip_l):
-    # instanciate worker
-    worker = Worker(Q)
-
-    # get task and append to wip list
-    func, args = Q.get()
-    wip_l.append(func)
-    worker.work(func, args)
-    # remove from list after it finishes
-    wip_l.remove(func)
-
-
-def drain(rate, f_frms, f_ftrs, f_mtchs, sample,
-          plylsts=[], vids=[]):
-    # Enqueue Qiter0 tasks:
-    Q = Queue()
-
-    manager = Manager()
-    wip_l = manager.list()
-
+def launching(rate, f_frms, f_ftrs, f_mtchs, sample, plylsts=[], vids=[]):
     for plylst in plylsts:
         for v_id in os.listdir(pth_plylst(plylst)):
-            args = (pth_vid(v_id, plylst),
-                    rate, f_frms, f_ftrs, f_mtchs, sample)
-            Q.put(('Qiter0', args))
+            args = (pth_vid(v_id, plylst), rate, f_frms, f_ftrs, f_mtchs, sample)
+            Process(target=master_iter0, args=args).start()
 
     for v_id in vids:
-        print('appending job from vids :{}'.format(v_id))
-        args = (pth_vid(v_id),
-                rate, f_frms, f_ftrs, f_mtchs, sample)
-        Q.put(('Qiter0', args))
+        args = (pth_vid(v_id), rate, f_frms, f_ftrs, f_mtchs, sample)
+        Process(target=master_iter0, args=(args,)).start()
 
-    while True:
-        if not Q.empty():
 
-            p = Process(target=worker_exec, args=(Q, wip_l))
-            p.start()
-
-        else:
-            if len(wip_l) == 0:
-                print('Finish Draining')
-                break
+def drain(rate, f_frms, f_ftrs, f_mtchs, sample, plylsts=[], vids=[]):
+    print('Start Draining')
+    execution = Process(target=launching, args=(rate, f_frms, f_ftrs, f_mtchs, sample, plylsts, vids))
+    execution.start()
+    execution.join()
+    print('Finish Draining')
