@@ -161,6 +161,7 @@ def yt_dl(url, playlist='', n_items=1, opts={}):
     with youtube_dl.YoutubeDL(opts) as ydl:
         ydl.download([url])
 
+    return pth_vid(url_to_id(url), playlist)
 
 def get_dic_info(pth_vid):
     """Load the info dictionnary created by youtube-dl when the video was downloaded."""
@@ -200,18 +201,14 @@ def xtrct_frame(v_id, plylst='', sample=False, rate=2, start=0, stop=30):
     os.system(cmd)
 
 
-def vid_xtrct(v_id, new_vid_file, start=0, stop=30):
+def xtrct_vid(path_data, path_new_data, start=0, stop=30, remove=False):
     """creates a copy of the video that begins at start (in seconds) parameter and
      ends at ends at stop (in seconds) parameter"""
-
-    path_v_dir = pth_vid(v_id=v_id)
-    path_data = pth_data(v_id=v_id)
-    path_new_vid = os.path.join(path_v_dir, new_vid_file)
 
     cmd_str = 'ffmpeg -i {} -ss {} -t {} -codec copy {}'.format(path_data,
                                                                 start,
                                                                 stop,
-                                                                path_new_vid)
+                                                                path_new_data)
     os.system(cmd_str)
 
 
