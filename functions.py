@@ -142,7 +142,7 @@ def gen_items(n_items):
     return items
 
 
-def yt_dl(url, playlist='', n_items=1, opts={}):
+def yt_dl(url, playlist='',format , n_items=1, opts={}):
     """Call youtube-dl to download a video providing the url. By default provides an output template to store all the videos in 
     a single directory, name them by id and extension and write information in json file"""
     
@@ -257,13 +257,17 @@ def openmvg_colors(pth_incr):
     os.system(cmd)
 
 
-def openmvg_bin_to_json(pth_bin):
-    """Call openMVG to convert to convert the binary file to json"""
-    pth = pth_bin.split(sep='bin')[0]
-    pth_json = pth + 'json'
-    cmd = "openMVG_main_ConvertSfM_DataFormat -i {} -o {}".format(pth_bin, pth_json)
-    os.system(cmd)
-    return pth_json
+def openmvg_bin_to_json(path_bin):
+    """Call openMVG to convert to convert the binary file to json at remove bin file.
+    Return path to json file. """
+    pth = path_bin.split(sep='bin')[0]
+    path_json = pth + 'json'
+    if not os.path.isfile(path_json):
+        cmd = "openMVG_main_ConvertSfM_DataFormat -i {} -o {}".format(path_bin, path_json)
+        os.system(cmd)
+        # remove bin file
+        os.system("rm {}".format(path_bin))
+    return path_json
 
 # Loop / Parallelize
 
