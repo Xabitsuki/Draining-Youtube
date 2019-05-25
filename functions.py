@@ -142,22 +142,26 @@ def gen_items(n_items):
     return items
 
 
-def yt_dl(url, playlist='',format , n_items=1, opts={}):
+def yt_dl(url, playlist='', format=None, n_items=1, opts={}):
     """Call youtube-dl to download a video providing the url. By default provides an output template to store all the videos in 
     a single directory, name them by id and extension and write information in json file"""
     
     if not opts:
-        if not playlist:
-            opts = {'outtmpl': 'videos/%(id)s/data/%(id)s_%(resolution)s.%(ext)s',
-                    'writeinfojson': 'videos/%(id)s/',
-                    'noplaylist':'no'}
-        else:
+        if playlist:
             # Generate string of items
             items = gen_items(n_items=n_items)
-            opts = {'outtmpl': 'videos/{}/%(id)s/data/%(id)s_%(resolution)s.%(ext)s'.format(playlist),
-                    'writeinfojson': 'videos/{}/%(id)s/'.format(playlist),
-                    'playlist_items': items}
-    
+            opts['outtmpl'] = 'videos/{}/%(id)s/data/%(id)s_%(resolution)s.%(ext)s'.format(playlist)
+            opts['writeinfojson'] = True
+            opts['playlist_items'] =  items
+
+        else:
+            opts['outtmpl'] = 'videos/%(id)s/data/%(id)s_%(resolution)s.%(ext)s'
+            opts['writeinfojson'] = True
+            opts['noplaylist'] ='no'
+
+        if format:
+            opts['fromat'] = format
+
     with youtube_dl.YoutubeDL(opts) as ydl:
         ydl.download([url])
 
