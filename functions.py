@@ -7,7 +7,7 @@ import json
 import numpy as np
 
 print('debug functions')
-PROJ_NAME = 'Draining-Youtube/debug_incremental'
+PROJ_NAME = 'Draining-Youtube'
 
 
 #######################################  Class
