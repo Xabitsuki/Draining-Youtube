@@ -6,8 +6,11 @@ import time
 import json
 import numpy as np
 
+print('debug functions')
+PROJ_NAME = 'Draining-Youtube/debug_incremental'
 
-# Class
+
+#######################################  Class
 
 
 class Timer:
@@ -26,7 +29,7 @@ class Timer:
             print('\nExecution time : {}\n'.format(pretty_time))
 
 
-# Unix
+#######################################  Unix
 
 def remove(path):
     """Remove file/dir"""
@@ -53,10 +56,10 @@ def make_dir(pth_dir):
         os.mkdir(pth_dir)
 
 
-# Path functions
+#######################################  Path functions
 
 
-def pth_prj(prj_name='Draining-Youtube'):
+def pth_prj(prj_name=PROJ_NAME):
 
     cur_dir = os.getcwd()
     split = cur_dir.split(prj_name)
@@ -89,7 +92,7 @@ def pth_vid(v_id, plylst=''):
         return (pth)
 
 
-def pth_data(v_id, plylst=''):
+def pth_data(v_id, plylst):
     """Returns full path to video file assuming call from main folder"""
     path_vid = pth_vid(v_id=v_id, plylst=plylst)
     path_data = os.path.join(path_vid, 'data')
@@ -101,19 +104,19 @@ def pth_data(v_id, plylst=''):
 
 
 def pth_frms(v_id, plylst=''):
-    return os.path.join(pth_vid(v_id, plylst=plylst), 'frames')
+    return os.path.join(pth_vid(v_id, plylst), 'frames')
 
 
 def pth_iter0(v_id, plylst=''):
-    return os.path.join(pth_vid(v_id, plylst),'iter0')
+    return os.path.join(pth_vid(v_id, plylst), 'iter0')
 
 
 def pth_iter0_feats(v_id, plylst=''):
-    return os.path.join(pth_vid(v_id, plylst=plylst), 'iter0', 'features')
+    return os.path.join(pth_vid(v_id, plylst), 'iter0', 'features')
 
 
 def pth_iter0_mtchs(v_id, plylst=''):
-    return os.path.join(pth_iter0_feats(v_id, plylst=plylst),'matches.f.txt')
+    return os.path.join(pth_iter0_feats(v_id, plylst), 'matches.f.txt')
 
 
 def pth_sets(v_id, plylst):
@@ -121,7 +124,8 @@ def pth_sets(v_id, plylst):
 
 
 def pth_sfm(pth):
-    """returns path to sfm (first found) file if found at location given by pth or None if no file found"""
+    """returns path to sfm (first found) file if found at location
+       given by pth or None if no file found"""
 
     list_sfm = [el for el in os.listdir(pth) if el.startswith('sfm_')]
 
@@ -131,23 +135,35 @@ def pth_sfm(pth):
         return None
 
 
-def get_v_id(pth):
-    """Retrieve v_id from path that contains it"""
+def get_plylst_id(path_vid):
+    """Get v_id and plylst ba parsinh vid path.
+    Returns v_id, plylst"""
 
-    return pth.split(sep=pth_vids())[1].split(sep='/')[1]
+    split = path_vid.split(sep=pth_vids())[1].split('/')
+    if len(split) == 3:
 
+        plylst = split[1]
+        v_id = split[2]
 
-# Youtube-dl
+        return v_id, plylst
+
+    elif len(split) == 2:
+
+        v_id = split[1]
+        return v_id, ''
+
+#######################################  Youtube-dl
 
 
 def url_to_id(url):
     """Take an url and return the youtube id that it contains"""
+
     return url.split(sep='watch?v=')[1].split('=')[0]
 
 
 def gen_items(n_items):
     """"Function used in yt_dl to generate the string of indices  corresponding to the desired
-    number of items to be downloaded."""
+        number of items to be downloaded."""
 
     items = '1'
     for ii in range(2,n_items):
@@ -157,37 +173,38 @@ def gen_items(n_items):
 
 
 def yt_dl(url, playlist='', format=None, n_items=1, opts={}):
-    """Call youtube-dl to download a video providing the url. By default provides an output template to store all the videos in 
-    a single directory, name them by id and extension and write information in json file"""
-    
+    """Call youtube-dl to download a video providing the url.
+       By default provides an output template to store all the videos in
+       a single directory, name them by id and extension and
+       write information in json file"""
+
     if not opts:
         if playlist:
-            # Generate string of items
-            items = gen_items(n_items=n_items)
             opts['outtmpl'] = 'videos/{}/%(id)s/data/%(id)s_%(resolution)s.%(ext)s'.format(playlist)
             opts['writeinfojson'] = True
-            opts['playlist_items'] =  items
+            opts['playlist_items'] =  gen_items(n_items=n_items)
 
         else:
             opts['outtmpl'] = 'videos/%(id)s/data/%(id)s_%(resolution)s.%(ext)s'
             opts['writeinfojson'] = True
-            opts['noplaylist'] ='no'
+            opts['noplaylist'] = 'no'
 
         if format:
-            opts['fromat'] = format
+            opts['format'] = format
 
     with youtube_dl.YoutubeDL(opts) as ydl:
         ydl.download([url])
 
-    return pth_vid(url_to_id(url), playlist)
+    return url_to_id(url), playlist
 
 
-def get_dic_info(pth_vid):
+def get_dic_info(v_id, plylst):
     """Load the info dictionnary created by youtube-dl when the video was downloaded."""
-    pth_data = os.path.join(pth_vid, 'data')
 
-    list_ = [el for el in os.listdir(pth_data) if el.endswith('.info.json')]
-    path_info = os.path.join(pth_data, list_[0])
+    path_data = os.path.join(pth_vid(v_id=v_id, plylst=plylst), 'data')
+
+    list_ = [el for el in os.listdir(path_data) if el.endswith('.info.json')]
+    path_info = os.path.join(path_data, list_[0])
 
     with open(path_info) as f:
         dic_info = json.load(f)
@@ -195,34 +212,36 @@ def get_dic_info(pth_vid):
     return dic_info
 
 
-# ffmpeg Wrapping
+#######################################  ffmpeg Wrapping
 
 
 def xtrct_frame(v_id, plylst='', sample=False, rate=2, start=0, stop=30):
-
     """ Creates a directory that contains the frames the extracted
-    frames and extracts the frames calling avconv"""
+        frames and extracts the frames calling avconv"""
+
+    path_data = pth_data(v_id=v_id, plylst=plylst)
 
     # Create "frame" directory:
-
-    path_frames = pth_frms(v_id, plylst)
+    path_frames = pth_frms(v_id=v_id, plylst=plylst)
     make_dir(path_frames)
-    path_data = pth_data(v_id, plylst)
 
     if sample:
-
-        cmd = 'ffmpeg -i {} -ss {} -t {} -r {} -f image2 {}/frame%04d.png'.format(path_data, start, stop, rate, path_frames)
+        cmd = 'ffmpeg -i {} -ss {} -t {} -r {} -f image2 {}/frame%04d.png'.format(path_data,
+                                                                                  start,
+                                                                                  stop,
+                                                                                  rate,
+                                                                                  path_frames)
 
     else:
-
-        cmd = 'ffmpeg -i {} -r {} -f image2 {}/frame%04d.png'.format(path_data, rate, path_frames)
-
+        cmd = 'ffmpeg -i {} -r {} -f image2 {}/frame%04d.png'.format(path_data,
+                                                                     rate,
+                                                                     path_frames)
     os.system(cmd)
 
 
 def xtrct_vid(path_data, path_new_data, start=0, stop=30, remove=False):
     """creates a copy of the video that begins at start (in seconds) parameter and
-     ends at ends at stop (in seconds) parameter"""
+       ends at ends at stop (in seconds) parameter"""
 
     cmd_str = 'ffmpeg -i {} -ss {} -t {} -codec copy {}'.format(path_data,
                                                                 start,
@@ -231,56 +250,66 @@ def xtrct_vid(path_data, path_new_data, start=0, stop=30, remove=False):
     os.system(cmd_str)
 
 
-# OpenMVG wrapping
+#######################################  OpenMVG wrapping
 
 
 def openmvg_list(width, pth_frms, pth_out):
     """Calls openMVG for to perform the image listing
-    Generates sfm_data.json file"""
+       Generates sfm_data.json file"""
 
     cmd = "openMVG_main_SfMInit_ImageListing -i {} -o {} -f {}".format(pth_frms, pth_out, width)
-    os.system(command=cmd)
-
-
-def openmvg_features(pth_sfm, pth_features):
-    """Calls openMVG to do compute features
-    Generates .desc and .feat in the dir given by path features for all the frames"""
-    cmd = 'openMVG_main_ComputeFeatures -i {} -o {}'.format(pth_sfm, pth_features)
     os.system(cmd)
 
 
-def openmvg_matches(pth_sfm, pth_matches, force=False):
+def openmvg_features(pth_sfm, pth_features, force=False):
+    """Calls openMVG to do compute features
+       Generates .desc and .feat in the dir given by path features for all the frames"""
+
+    cmd = 'openMVG_main_ComputeFeatures -i {} -o {}'.format(pth_sfm, pth_features)
+    if force: cmd = cmd + " -f 1"
+    os.system(cmd)
+
+
+def openmvg_matches(pth_sfm, pth_matches, video_mode=5, force=False):
     """Calls openMVG to do compute matches
-    Generates various files: .bin , putative_matches ... """
-    cmd = 'openMVG_main_ComputeMatches -i {} -o {}'.format(pth_sfm, pth_matches)
+       Generates various files: .bin , putative_matches ... """
+
+    cmd = "openMVG_main_ComputeMatches -i {} -o {} -v {}".format(pth_sfm, pth_matches, video_mode)
+    if force:
+        cmd = cmd + " -f 1"
     os.system(cmd)
 
 
 def openmvg_incremental(pth_sfm, pth_matches, pth_incr):
     """Calles openMVG for the incremental
-    Generates 3D models: .ply files"""
+       Auto is a flag to be used in sfm to automatize the execution.
+       Generates 3D models: .ply files"""
 
-    cmd = "openMVG_main_IncrementalSfM -i {} -m {} -o {} ".format(pth_sfm, pth_matches, pth_incr)
+    cmd = "openMVG_main_IncrementalSfM2 -i {} -m {} -o {} ".format(pth_sfm, pth_matches, pth_incr)
+
     os.system(cmd)
 
 
 def openmvg_colors(pth_incr):
-    """Functions to call openMVG_main_ComputeSfM_DataColor to add the colors on the points of the 3D model"""
+    """Functions to call openMVG_main_ComputeSfM_DataColor to add
+       the colors on the points of the 3D model.
+       If incremental step failed (no sfm_data_color.ply file),
+       renames the folder incremental_fail"""
 
     path_sfm = pth_sfm(pth=pth_incr)
+
     if path_sfm:
         path_ply = os.path.join(pth_incr, 'sfm_data_color.ply')
         cmd = 'openMVG_main_ComputeSfM_DataColor -i {} -o {}'.format(path_sfm, path_ply)
         os.system(cmd)
     else:
-        fail_file = os.path.join(pth_incr, 'incremental_failed')
-        f = open(fail_file, mode='x')
-        f.close()
+        os.renames(old=pth_incr, new='{}_fail'.format(pth_incr))
 
 
 def openmvg_bin_to_json(path_bin):
     """Call openMVG to convert to convert the binary file to json at remove bin file.
-    Return path to json file. """
+       Return path to json file. """
+
     pth = path_bin.split(sep='bin')[0]
     path_json = pth + 'json'
     if not os.path.isfile(path_json):
@@ -291,18 +320,19 @@ def openmvg_bin_to_json(path_bin):
     return path_json
 
 
-# Extract Triangles
+#######################################  Extract Triangles
 
 
 def line_to_tuple(line):
     """Used to read matches.f.txt file in extract_matches"""
+
     return (int(line.split(sep=' ', maxsplit=1)[0]),
             int(line.split(sep=' ', maxsplit=1)[1]))
 
 
 def extract_matches(path_mtchs):
     """function to read the matches.f.txt file to extract the matches.
-    Return: match_list"""
+       Return: match_list"""
 
     # Open and read matches file
     f = open(path_mtchs, mode='r')
@@ -326,7 +356,7 @@ def extract_matches(path_mtchs):
 
 def make_adj_mat(match_list, path_frames):
     """Function to recreate an adjacency matrix out of
-    the match_list passed as argument."""
+       the match_list passed as argument."""
 
     # retrieve size of matrix
     remove_ds_store(path_frames)
@@ -344,16 +374,16 @@ def make_adj_mat(match_list, path_frames):
 
 
 def bin_matches_to_adja_mat(path_mtchs, path_frames):
-    """"Returns adjacency matrix provided the path to the matches
-    and the path to the frames (used in iter0)."""
+    """Returns adjacency matrix provided the path to the matches
+       and the path to the frames (used in iter0)."""
 
     return make_adj_mat(extract_matches(path_mtchs), path_frames)
 
 
 def split_triangles(adj_mat, tol=30):
     """Provides a list containing tuples that describe
-    triangles of images that match : the triangle are composed of the points
-    (i_min, i_min+1), (i_min, i_max), (i_max-1, i_max) in the adjacency matrix """
+       triangles of images that match : the triangle are composed of the points
+       (i_min, i_min+1), (i_min, i_max), (i_max-1, i_max) in the adjacency matrix."""
 
     n = adj_mat.shape[0]
     triangles = list()
@@ -393,11 +423,11 @@ def split_triangles(adj_mat, tol=30):
 
 def move_triangles(triangles, path_vid, path_frames, path_feats):
     """Function used to move the frames and their .desc and .feat files
-    from main folder to sub-fub folders created.
-    Generates: - sets/
-               - sets/set_i
-               - sets/set_i/frames
-               - sets/set_i/features"""
+       from main folder to sub-fub folders created.
+       Generates: - sets/
+                  - sets/set_i
+                  - sets/set_i/frames
+                  - sets/set_i/features"""
     s = 0
     path_sets = os.path.join(path_vid, 'sets')
     make_dir(path_sets)
