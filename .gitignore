@@ -16,3 +16,5 @@ videos/*
 .ipynb_checkpoints/*
 
 
+# local
+local/*
