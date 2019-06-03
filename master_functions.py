@@ -187,14 +187,14 @@ def sfm_pipe_seq(pth_sets, width):
 #######################################  Single video in parallel
 
 
-def drain_one(url, dl_format=248, rate=2, cpu_number=8,
+def drain_one(url, playlist='', dl_format=248, rate=2, cpu_number=8,
               sample=False, frame_force=False,
               feature_force=False,
               match_force=False, video_mode=5):
     """Function to download and process one video.
-    Return path to video folder. """
+       Return path to video folder. """
 
-    v_id, plylst = yt_dl(url=url, format=dl_format)
+    v_id, plylst = yt_dl(url=url, playlist=playlist,format=dl_format)
 
     path_vid = pth_vid(v_id, plylst)
 
@@ -208,8 +208,8 @@ def drain_one(url, dl_format=248, rate=2, cpu_number=8,
     return path_vid
 
 def sfm_pipe_par(pth_sets, width, cpu_number=8):
-    """ Executes sfm_pipe in parallel.
-    At max a number of process equal to cpu_number."""
+    """Executes sfm_pipe in parallel.
+       At max a number of process equal to cpu_number."""
 
     pth_sets = [os.path.join(pth_sets, el) for el in os.listdir(pth_sets)]
 
@@ -229,7 +229,7 @@ def sfm_pipe_par(pth_sets, width, cpu_number=8):
 
 def drain_many_par(plylsts=[], vids=[], rate=2, frame_force=False, feature_force=False, match_force=False, sample=False):
     """Launch parent processes.
-    Execution finishes when all iter0 and subordinary sfm_pipes jobs terminated."""
+       Execution finishes when all iter0 and subordinary sfm_pipes jobs terminated."""
 
     # One parent process: all other processes are children
     parent_process = Process(target=launch_all_par, args=(plylsts, vids, rate, frame_force, feature_force, match_force, sample))
@@ -239,7 +239,7 @@ def drain_many_par(plylsts=[], vids=[], rate=2, frame_force=False, feature_force
 
 def launch_all_par(plylsts=[], vids=[], rate=2, frame_force=False, feature_force=False, match_force=False, sample=False):
     """Spawns as many iter0 as the number of videos in playlists or in the videos list.
-    After an iter0 process finishes, it launches the sfm_pipes in parallel."""
+       After an iter0 process finishes, it launches the sfm_pipes in parallel."""
 
     for plylst in plylsts:
         for v_id in os.listdir(pth_plylst(plylst)):
@@ -253,7 +253,7 @@ def launch_all_par(plylsts=[], vids=[], rate=2, frame_force=False, feature_force
 
 def iter0_sfm_par(args):
     """Performs iter0() and launch sfm_pipe processes with
-    the generated sets."""
+       the generated sets."""
 
     path_set_dir, width = iter0(*args)
     pth_sets = [os.path.join(path_set_dir, el) for el in os.listdir(path_set_dir)]
