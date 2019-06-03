@@ -1,6 +1,5 @@
 from multiprocessing import Manager, Process
 from functions import *
-print('debug master_functions')
 
 MATCH_GEN_FILES = ['geometric_matches',
                    'GeometricAdjacencyMatrix.svg',
