@@ -135,9 +135,9 @@ def drain_many_seq(vids_list=[], plylst ='', rate=1, cpu_nbr=8,
                    feature_force=False,
                    match_force=False, video_mode=5):
     """Process many videos in parallel.
-    iter0 are executed in parallel.
-    sfm_pipe are executed for each video in parallel but each set for each video is treated sequentially.
-    Use : pass either a list of vid ids or the name of a playlist"""
+       iter0 are executed in parallel.
+       sfm_pipe are executed for each video in parallel but each set for each video is treated sequentially.
+       Use : pass either a list of vid ids or the name of a playlist"""
 
     manager = Manager()
     shared_list = manager.list()
@@ -149,9 +149,8 @@ def drain_many_seq(vids_list=[], plylst ='', rate=1, cpu_nbr=8,
     # iter0s step
     target = iter0_seq
     while not len(vids_list) == 0:
-        args_l=[]
         v_ids = list_extract(lst=vids_list, max_num=cpu_nbr)
-        args_l = [((pth_vid(v_id=v_id, plylst=plylst),rate,  sample, frame_force, feature_force, match_force, video_mode), shared_list)
+        args_l = [((v_id, plylst, rate,  sample, frame_force, feature_force, match_force, video_mode), shared_list)
                   for v_id in v_ids]
 
         control_launch = Process(target=launch_batch_par, args=(target, args_l))
@@ -171,7 +170,6 @@ def drain_many_seq(vids_list=[], plylst ='', rate=1, cpu_nbr=8,
 
 def iter0_seq(args_iter0, shared_list):
     """Calls iter0 and append the returns to the shared_list"""
-
     paths_sets, width = iter0(*args_iter0)
     shared_list.append((paths_sets, width))
 

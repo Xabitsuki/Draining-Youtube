@@ -29,7 +29,7 @@ class Timer:
             print('\nExecution time : {}\n'.format(pretty_time))
 
 
-#######################################  Unix
+#######################################  Unixs
 
 def remove(path):
     """Remove file/dir"""
@@ -67,12 +67,15 @@ def pth_prj(prj_name=PROJ_NAME):
 
 
 def pth_vids():
+    """Return path to videos/ folder"""
+
     pth = os.path.join(pth_prj(), 'videos')
     remove_ds_store(pth)
     return pth
 
 
 def pth_plylst(name):
+    """Return path to playlist folder in videos folder"""
 
     pth = os.path.join(pth_vids(), name)
     remove_ds_store(pth)
