@@ -154,25 +154,24 @@ def gen_items(n_items):
     return items
 
 
-def yt_dl(url, playlist='', format=None, n_items=1, opts={}):
+def yt_dl(url, playlist='', format=None, n_items=1):
     """Call youtube-dl to download a video providing the url.
        By default provides an output template to store all the videos in
        a single directory, name them by id and extension and
        write information in json file"""
+    opts = dict()
+    if playlist:
+        opts['outtmpl'] = 'videos/{}/%(id)s/data/%(id)s_%(resolution)s.%(ext)s'.format(playlist)
+        opts['writeinfojson'] = True
+        opts['playlist_items'] = gen_items(n_items=n_items)
 
-    if not opts:
-        if playlist:
-            opts['outtmpl'] = 'videos/{}/%(id)s/data/%(id)s_%(resolution)s.%(ext)s'.format(playlist)
-            opts['writeinfojson'] = True
-            opts['playlist_items'] =  gen_items(n_items=n_items)
+    else:
+        opts['outtmpl'] = 'videos/%(id)s/data/%(id)s_%(resolution)s.%(ext)s'
+        opts['writeinfojson'] = True
+        opts['noplaylist'] = 'no'
 
-        else:
-            opts['outtmpl'] = 'videos/%(id)s/data/%(id)s_%(resolution)s.%(ext)s'
-            opts['writeinfojson'] = True
-            opts['noplaylist'] = 'no'
-
-        if format:
-            opts['format'] = format
+    if format:
+        opts['format'] = format
 
     with youtube_dl.YoutubeDL(opts) as ydl:
         ydl.download([url])
@@ -278,9 +277,8 @@ def openmvg_colors(pth_incr):
        If incremental step failed (no sfm_data_color.ply file),
        renames the folder incremental_fail"""
 
-    path_sfm = pth_sfm(pth=pth_incr)
-
-    if path_sfm:
+    path_sfm = os.path.join(pth_incr,'sfm_data.bin') # Should not be hardcoded
+    if os.path.isfile(path_sfm):
         path_ply = os.path.join(pth_incr, 'sfm_data_color.ply')
         cmd = 'openMVG_main_ComputeSfM_DataColor -i {} -o {}'.format(path_sfm, path_ply)
         os.system(cmd)
@@ -288,18 +286,16 @@ def openmvg_colors(pth_incr):
         os.renames(old=pth_incr, new='{}_fail'.format(pth_incr))
 
 
-def openmvg_bin_to_json(path_bin):
-    """Call openMVG to convert to convert the binary file to json at remove bin file.
-       Return path to json file. """
+def openmvg_get_extrinsics(path_incr):
+    """Call openMVG to convert to extract extrinsics from binary file.
+       Return path to extrinsics json file. """
 
-    pth = path_bin.split(sep='bin')[0]
-    path_json = pth + 'json'
-    if not os.path.isfile(path_json):
-        cmd = "openMVG_main_ConvertSfM_DataFormat -i {} -o {}".format(path_bin, path_json)
+    path_extrinsics = os.path.join(path_incr, 'extrinsics.json')
+    if not os.path.isfile(path_extrinsics):
+        path_bin = os.path.join(path_incr, 'sfm_data.bin')
+        cmd = 'openMVG_main_ConvertSfM_DataFormat -i {} -o {} -E'.format(path_bin, path_extrinsics)
         os.system(cmd)
-        # remove bin file
-        os.system("rm {}".format(path_bin))
-    return path_json
+    return path_extrinsics
 
 
 #######################################  Extract Triangles

@@ -195,7 +195,6 @@ def drain_one(url, playlist='', dl_format=248, rate=2, cpu_number=8,
        Return path to video folder. """
 
     v_id, plylst = yt_dl(url=url, playlist=playlist,format=dl_format)
-
     path_vid = pth_vid(v_id, plylst)
 
     path_sets, width = iter0(v_id=v_id, plylst=plylst,
