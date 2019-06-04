@@ -190,7 +190,7 @@ def sfm_pipe_seq(pth_sets, width):
 def drain_one(url, playlist='', dl_format=248, rate=2, cpu_number=8,
               sample=False, frame_force=False,
               feature_force=False,
-              match_force=False, video_mode=5):
+              match_force=False, video_mode=10):
     """Function to download and process one video.
        Return path to video folder. """
 

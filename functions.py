@@ -286,16 +286,17 @@ def openmvg_colors(pth_incr):
         os.renames(old=pth_incr, new='{}_fail'.format(pth_incr))
 
 
-def openmvg_get_extrinsics(path_incr):
-    """Call openMVG to convert to extract extrinsics from binary file.
-       Return path to extrinsics json file. """
+def openmvg_convert_sfm_data_format(pth_in):
+    """Call openMVG to convert sfm_data.XXX
+       to sfm_data.json.
+       Return path to generated file."""
 
-    path_extrinsics = os.path.join(path_incr, 'extrinsics.json')
-    if not os.path.isfile(path_extrinsics):
-        path_bin = os.path.join(path_incr, 'sfm_data.bin')
-        cmd = 'openMVG_main_ConvertSfM_DataFormat -i {} -o {} -E'.format(path_bin, path_extrinsics)
+    pth_out = pth_in.split('.')[0] + '.json'
+
+    if not os.path.isfile(pth_out):
+        cmd = 'openMVG_main_ConvertSfM_DataFormat -i {} -o {}'.format(pth_in, pth_out)
         os.system(cmd)
-    return path_extrinsics
+    return pth_out
 
 
 #######################################  Extract Triangles
