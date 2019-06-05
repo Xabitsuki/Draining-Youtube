@@ -255,7 +255,13 @@ def openmvg_matches(pth_sfm, pth_matches, video_mode=5, force=False):
     """Calls openMVG to do compute matches
        Generates various files: .bin , putative_matches ... """
 
-    cmd = "openMVG_main_ComputeMatches -i {} -o {} -v {}".format(pth_sfm, pth_matches, video_mode)
+    cmd = "openMVG_main_ComputeMatches -i {} -o {} -v {}".format(pth_sfm,
+                                                                 pth_matches,
+                                                                 video_mode)
+    if not video_mode:
+        cmd = 'openMVG_main_ComputeMatches -i {} -o {}'.format(pth_sfm,
+                                                               pth_matches)
+
     if force:
         cmd = cmd + " -f 1"
     os.system(cmd)
