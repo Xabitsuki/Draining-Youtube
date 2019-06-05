@@ -251,7 +251,7 @@ def openmvg_features(pth_sfm, pth_features, force=False):
     os.system(cmd)
 
 
-def openmvg_matches(pth_sfm, pth_matches, video_mode=5, force=False):
+def openmvg_matches(pth_sfm, pth_matches, video_mode=None, force=False):
     """Calls openMVG to do compute matches
        Generates various files: .bin , putative_matches ... """
 
@@ -272,8 +272,9 @@ def openmvg_incremental(pth_sfm, pth_matches, pth_incr):
        Auto is a flag to be used in sfm to automatize the execution.
        Generates 3D models: .ply files"""
 
-    cmd = "openMVG_main_IncrementalSfM2 -i {} -m {} -o {} ".format(pth_sfm, pth_matches, pth_incr)
-
+    cmd = "openMVG_main_IncrementalSfM2 -i {} -m {} -o {} ".format(pth_sfm,
+                                                                   pth_matches,
+                                                                   pth_incr)
     os.system(cmd)
 
 
