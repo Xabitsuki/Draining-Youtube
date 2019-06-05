@@ -55,8 +55,9 @@ def iter0(v_id, plylst='', rate=2,
     path_frames = pth_frms(v_id, plylst)
     if frame_force:
         remove(path_frames)
+     
     if not os.path.isdir(path_frames):
-        xtrct_frame(v_id, plylst, sample, rate)
+        xtrct_frames(v_id, plylst, sample, rate)
 
     # Make iter0 dir
     pth_it0 = pth_iter0(v_id, plylst)

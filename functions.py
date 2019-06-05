@@ -196,9 +196,12 @@ def get_dic_info(v_id, plylst):
 #######################################  ffmpeg Wrapping
 
 
-def xtrct_frame(v_id, plylst='', sample=False, rate=2, start=0, stop=30):
+def xtrct_frames(v_id, plylst='', sample=False, rate=2, start=60, stop=360):
     """ Creates a directory that contains the frames the extracted
-        frames and extracts the frames calling avconv"""
+        frames and extracts the frames calling avconv. 
+        If sample is True, the the function will extract frames 
+        from the 01:00 to 05:00 by default or from 'start' to 'stop' in
+        second. """
 
     path_data = pth_data(v_id=v_id, plylst=plylst)
 
