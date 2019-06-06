@@ -142,7 +142,7 @@ def drain_many_seq(urls, plylst ='',
                    parallel_tasks=4,
                    sample=False, frame_force=False,
                    feature_force=False,
-                   match_force=False, video_mode=10):
+                   match_force=False, video_mode=30):
     """Process many videos in parallel.
        iter0 are executed in parallel.
        sfm_pipe are executed for each video in parallel but each set for each video is treated sequentially.
@@ -211,7 +211,7 @@ def sfm_pipe_seq(pth_sets, width):
 def drain_one(url, playlist='', dl_format=248, rate=2, cpu_number=8,
               sample=False, frame_force=False,
               feature_force=False,
-              match_force=False, video_mode=10):
+              match_force=False, video_mode=30):
     """Function to download and process one video.
        Return path to video folder. """
 
