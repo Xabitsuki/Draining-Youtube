@@ -138,7 +138,7 @@ def get_plylst_id(path_vid):
 
 
 def url_to_id(url):
-    """Take an url and return the youtube id that it contains"""
+    """Take an url and return the youtube id that it contains."""
 
     return url.split(sep='watch?v=')[1].split('=')[0]
 
@@ -159,6 +159,7 @@ def yt_dl(url, playlist='', format=None, n_items=1):
        By default provides an output template to store all the videos in
        a single directory, name them by id and extension and
        write information in json file"""
+       
     opts = dict()
     if playlist:
         opts['outtmpl'] = 'videos/{}/%(id)s/data/%(id)s_%(resolution)s.%(ext)s'.format(playlist)
@@ -180,7 +181,8 @@ def yt_dl(url, playlist='', format=None, n_items=1):
 
 
 def get_dic_info(v_id, plylst):
-    """Load the info dictionnary created by youtube-dl when the video was downloaded."""
+    """Load the info dictionnary created by youtube-dl 
+       when the video was downloaded."""
 
     path_data = os.path.join(pth_vid(v_id=v_id, plylst=plylst), 'data')
 
