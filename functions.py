@@ -366,7 +366,8 @@ def make_adj_mat(match_list, path_frames):
 
 def bin_matches_to_adja_mat(path_mtchs, path_frames):
     """Returns adjacency matrix provided the path to the matches
-       and the path to the frames (used in iter0)."""
+       file and the path to the frames folder.
+       Fucntion used in iter0."""
 
     return make_adj_mat(extract_matches(path_mtchs), path_frames)
 
