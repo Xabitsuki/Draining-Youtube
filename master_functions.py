@@ -208,38 +208,41 @@ def sfm_pipe_seq(pth_sets, width):
 #######################################  Single video in parallel
 
 
-def drain_one(url, playlist='', dl_format=248, rate=2, cpu_number=8,
+def drain_one(url, playlist='', 
+              dl_format=248, rate=2, parallel_tasks=4,
               sample=False, frame_force=False,
               feature_force=False,
               match_force=False, video_mode=30):
     """Function to download and process one video.
-       Return path to video folder. """
+       Returns path to video folder.
+       Launches as many sfm_pipes in parallel as 
+       parallel_tasks. 
+       Returns path to video folder"""
 
-    v_id, plylst = yt_dl(url=url, playlist=playlist,format=dl_format)
-    path_vid = pth_vid(v_id, plylst)
+    v_id, _ = yt_dl(url=url, playlist=playlist,format=dl_format)
 
-    path_sets, width = iter0(v_id=v_id, plylst=plylst,
+    path_sets, width = iter0(v_id=v_id, plylst=playlist,
                              rate=rate,
                              sample=sample, frame_force=frame_force,
                              feature_force=feature_force,
                              match_force=match_force, video_mode=video_mode)
 
-    sfm_pipe_par(pth_sets=path_sets, width=width, cpu_number=cpu_number)
-    return path_vid
+    sfm_pipe_par(path_sets, width, parallel_tasks)
+    return pth_vid(v_id, playlist)
 
-def sfm_pipe_par(pth_sets, width, cpu_number=8):
-    """Executes sfm_pipe in parallel.
-       At max a number of process equal to cpu_number."""
+
+def sfm_pipe_par(pth_sets, width, parallel_tasks=4):
+    """Executes a number equal to parallel_tasks of 
+       sfm_pipe in parallel."""
 
     pth_sets = [os.path.join(pth_sets, el) for el in os.listdir(pth_sets)]
 
-    target = sfm_pipe
     while not len(pth_sets) == 0:
 
-        pths = list_extract(lst=pth_sets, max_num=cpu_number)
-        args_l = [(pth, width) for pth in pths]
+        pths = list_extract(lst=pth_sets, max_num=parallel_tasks)
+        args_sfm = [(pth, width) for pth in pths]
 
-        batch_execution = Process(target=execute_fun_par, args=(target, args_l))
+        batch_execution = Process(target=execute_fun_par, args=(sfm_pipe, args_sfm))
         batch_execution.start()
         batch_execution.join()
 
