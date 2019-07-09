@@ -71,7 +71,7 @@ The pipeline is basically a python wrapping that orchestrates calls to
 the external libraries.
 The code is written in python 3 and installing jupyter notebook is also required 
 to execute the notebooks provided.  
-Both can simply be installed by download the Anaconda distribution that can be found 
+Both can simply be installed by downloading the Anaconda distribution that can be found 
 at this [link] (https://www.anaconda.com/distribution/) (select python 3.XX distribution).
 
 ##### External librairies
