@@ -1,4 +1,4 @@
-##Introduction
+## Introduction
 
 YouTube is today the largest video sharing platform.  
 In 2019, it counts more than a billion of users, more than 7 billion videos and more 
@@ -30,12 +30,12 @@ The  generated models could be shared freely and could track the evolution of th
 surface of the globe as many places are recorded several times.
 
 
-##Research summary
+## Research summary
 
 To investigate the question of wether or not YouTube can be used a source for the generation
 of 3D models of the world, a __draining__ pipeline was implemented. 
 
-#####Pipeline summary
+##### Pipeline summary
 The pipeline was required to takes as __input__ a link to a YouTube video and to
 __output__ the 3D models generated from the video. 
 
@@ -51,7 +51,7 @@ video). (realized using `ffmpeg`)
 When the pipelien finishes, `set_X/` (X is an index) files were generated, each one containing 
 the frames that were used to generated the a 3D sparse point-cloud model 
 of the scene. 
-#####Illustrations
+##### Illustrations
 Consider the following frame of Lausanne's cathedral. 
 ![alt text][cathedral]
 
@@ -63,10 +63,10 @@ Where the green points are the estimated camera poses.
 [cathedral]: imgs_readme/frame0093.png
 [model]: imgs_readme/cathedral_lausanne_3d01.png
 
-##Installation and Usage
+## Installation and Usage
 
-####Dependencies: 
-#####Python
+#### Dependencies: 
+##### Python
 The pipeline is basically a python wrapping that orchestrates calls to 
 the external libraries.
 The code is written in python 3 and installing jupyter notebook is also required 
@@ -74,7 +74,7 @@ to execute the notebooks provided.
 Both can simply be installed by download the Anaconda distribution that can be found 
 at this [link] (https://www.anaconda.com/distribution/) (select python 3.XX distribution).
 
-#####External librairies
+##### External librairies
 The draining pipeline uses three main components: `youtube-dl`, `ffmpeg` and `openMVG`. 
 
 To install the latest versions of `youtube-dl` and `ffmpeg` please refer to the 
@@ -95,7 +95,7 @@ We recommend installing MeshLab for the visualization of the 3D models: availabl
  
 [openmvg_folder]: openMVG_develop/
  
-#####Test the installation 
+##### Test the installation 
 
 After installing all the dependencies, the `drain_one.py` script can be run 
 to download and process the aforementioned drone footage of Lausanne. 
@@ -128,7 +128,7 @@ of Lausanne's cathedral as showed above.
 Have fun !
  
 
-##License
+## License
 
 MIT License
 
