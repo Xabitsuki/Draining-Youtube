@@ -6,7 +6,9 @@ import time
 import json
 import numpy as np
 
-PROJ_NAME = 'Draining-Youtube'
+
+PATH_PROJ = '../'
+
 
 #######################################  Unixs
 
@@ -38,11 +40,11 @@ def make_dir(pth_dir):
 #######################################  Path functions
 
 
-def pth_prj(prj_name=PROJ_NAME):
-
-    cur_dir = os.getcwd()
-    split = cur_dir.split(prj_name)
-    return os.path.join(split[0], prj_name)
+def pth_prj():
+    """Provides path to the project folder.
+       By default the project folder is above the
+       /source folder that contains this file: PATH_PROJ set to '..' """
+    return PATH_PROJ
 
 
 def pth_vids():
@@ -162,12 +164,12 @@ def yt_dl(url, playlist='', format=None, n_items=1):
        
     opts = dict()
     if playlist:
-        opts['outtmpl'] = 'videos/{}/%(id)s/data/%(id)s_%(resolution)s.%(ext)s'.format(playlist)
+        opts['outtmpl'] = '{}/videos/{}/%(id)s/data/%(id)s_%(resolution)s.%(ext)s'.format(pth_prj(),playlist)
         opts['writeinfojson'] = True
         opts['playlist_items'] = gen_items(n_items=n_items)
 
     else:
-        opts['outtmpl'] = 'videos/%(id)s/data/%(id)s_%(resolution)s.%(ext)s'
+        opts['outtmpl'] = '{}/videos/%(id)s/data/%(id)s_%(resolution)s.%(ext)s'.format(pth_prj())
         opts['writeinfojson'] = True
         opts['noplaylist'] = 'no'
 
@@ -199,12 +201,12 @@ def get_dic_info(v_id, plylst):
 
 
 def xtrct_frames(v_id, plylst='',
-                 sample=False, rate=2, start=60, stop=360):
+                 sample=False, rate=2, start=0, stop=300):
     """ Creates a directory that contains the frames the extracted
         frames and extracts the frames calling avconv. 
         If sample is True, the the function will extract frames 
-        from the 01:00 to 05:00 by default or from 'start' to 'stop' in
-        second. """
+        from the 00:00 to 05:00 by default or from 'start' to 'stop'
+        expressed in second. """
 
     path_data = pth_data(v_id=v_id, plylst=plylst)
 

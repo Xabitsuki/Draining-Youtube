@@ -135,6 +135,7 @@ def get_info_video_aux(v_id, plylst):
     data_list.append(rate * duration)  # 5
 
     # Number of sets
+    remove_ds_store(pth_sets(v_id, plylst))
     nbr_sets = len(os.listdir(pth_sets(v_id, plylst)))
     data_list.append(nbr_sets)  # 6
     return data_list
@@ -149,7 +150,6 @@ def get_info_sets(data_list):
     sets = pth_sets(data_list[1], data_list[0])
     nbr_sets = data_list[6]
     rows = []
-
     for i in range(nbr_sets):
         cur = data_list.copy()
         # Set number
