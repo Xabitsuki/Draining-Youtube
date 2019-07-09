@@ -6,7 +6,9 @@ import time
 import json
 import numpy as np
 
-PROJ_NAME = 'Draining-Youtube'
+
+PATH_PROJ = '../'
+
 
 #######################################  Unixs
 
@@ -38,11 +40,11 @@ def make_dir(pth_dir):
 #######################################  Path functions
 
 
-def pth_prj(prj_name=PROJ_NAME):
-
-    cur_dir = os.getcwd()
-    split = cur_dir.split(prj_name)
-    return os.path.join(split[0], prj_name)
+def pth_prj():
+    """Provides path to the project folder.
+       By default the project folder is above the
+       /source folder that contains this file: PATH_PROJ set to '..' """
+    return PATH_PROJ
 
 
 def pth_vids():
@@ -162,12 +164,12 @@ def yt_dl(url, playlist='', format=None, n_items=1):
        
     opts = dict()
     if playlist:
-        opts['outtmpl'] = 'videos/{}/%(id)s/data/%(id)s_%(resolution)s.%(ext)s'.format(playlist)
+        opts['outtmpl'] = '{}/videos/{}/%(id)s/data/%(id)s_%(resolution)s.%(ext)s'.format(pth_prj(),playlist)
         opts['writeinfojson'] = True
         opts['playlist_items'] = gen_items(n_items=n_items)
 
     else:
-        opts['outtmpl'] = 'videos/%(id)s/data/%(id)s_%(resolution)s.%(ext)s'
+        opts['outtmpl'] = '{}/videos/%(id)s/data/%(id)s_%(resolution)s.%(ext)s'.format(pth_prj())
         opts['writeinfojson'] = True
         opts['noplaylist'] = 'no'
 

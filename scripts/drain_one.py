@@ -1,15 +1,16 @@
 import sys
+sys.path.insert(0, '../source/')
 import os
 from time import time
 from multiprocessing import cpu_count
 from master_functions import drain_one
-sys.path.insert(0, '../source/')
+
 
 
 # Link of the videos to be downloaded and processed
 # https://www.youtube.com/watch?v=LnyKeqdzQao is test
 # video of a drain flight over the city of Lausanne.
-URL = ['https://www.youtube.com/watch?v=LnyKeqdzQao']
+URL = 'https://www.youtube.com/watch?v=LnyKeqdzQao'
 
 
 # Name of the playlist folder in videos/ containing the video directories
