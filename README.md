@@ -48,9 +48,10 @@ video). (realized using `ffmpeg`)
 3. The extracted frames are used to reconstruct the 3D structure of the recorded scenes. 
 (realized using the `openMVG` library)  
 
-When the pipelien finishes, `set_X/` (X is an index) files were generated, each one containing 
-the frames that were used to generated the a 3D sparse point-cloud model 
-of the scene. 
+When the pipelien finishes, `set_X/` (X is an index) folders were generated, each one containing 
+the frames that were used to generate a 3D sparse point-cloud model of the scene captured in the 
+different frames. 
+
 ##### Illustrations
 Consider the following frame of Lausanne's cathedral. 
 ![alt text][cathedral]
@@ -82,7 +83,7 @@ following links:
 - [install youtube-dl](http://ytdl-org.github.io/youtube-dl/download.html)
 - [install ffmpeg](https://ffmpeg.org/download.html)
 
-The actual version of the pipeline uses a slightly modified of openMVG:
+The actual version of the pipeline uses a slightly modified version of openMVG:
 some lines of the source code were modified for convenience and the 
 the pipeline uses the __develop__ branch of openMVG (time of writting: 3rd of July 2019). 
 
@@ -105,7 +106,7 @@ To do so, open a terminal in the `scripts/` folder and execute:
 The output of `youtube-dl`should be displayed  in the terminal, followed
 by those of the `ffmpeg` and the `openMVG`. 
 
-The executions can take about 5 minutes.  
+The executions can take several minutes to complete.  
 Once it finished, in the `videos/` folder one can find the `test_video/` folder. 
 In `test_video/` there is a folder named using the YouTube ID of the downloaded video which
 is the `LnyKeqdzQao/` in this case.  
@@ -116,14 +117,16 @@ In `LnyKeqdzQao/`:
 generated 3D models.
 - `iter0/` contains files generated during the process. 
 - `sets/` can contain one or several `set_X` folders.
-In each:
-    - `frames/` folder containing the frames used for the 3D reconstruction.  
-    - `features/` folder and the `sfm_data.json` file are data used by openMVG in the reconstruction.  
+In each `set_X`:
+    - The `frames/` folder containing the frames used for the 3D reconstruction.  
+    - The `features/` folder and the `sfm_data.json` file are data used by openMVG in the reconstruction.  
     - The 3D model can be found in the folder `incremental/` and is generically named 
 `sfm_data_color.ply` for each set (can be opened using MeshLab).
 
 If the installation and the process succeeded you should have the same point cloud model
-of Lausanne's cathedral as showed above. 
+of Lausanne's cathedral as shown above. 
+
+To process another video, simply modify the variable URL in `drain_one.py` and re-execute the script.
 
 Have fun !
  
